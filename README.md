@@ -1,127 +1,143 @@
-# Agentic OS — Android Assistant App
+<p align="center">
+  <img src="assets/app_icon.png" width="150" alt="Agentic OS Logo" />
+</p>
 
-A non-rooted Android app that turns any phone into a JARVIS-style autonomous assistant. Runs as a foreground service, uses on-device LLM for local reasoning, and falls back to Google Search for internet-dependent queries.
+<h1 align="center">Agentic OS</h1>
 
-## Features
+<p align="center">
+  <strong>Your phone, truly yours — an autonomous Android assistant built for privacy and control.</strong><br>
+  A non-rooted Android app that turns any phone into a JARVIS-style autonomous assistant with on-device AI reasoning.
+</p>
 
-### Core Assistant
-- **Voice-first interface** — Hotword detection ("Hey Agent") + continuous listening
-- **On-device LLM** — MediaPipe LLM Inference (Gemini Nano / Phi-3 / SmolLM) for privacy-first reasoning
-- **Web search fallback** — When query needs internet (news, weather, facts), scrapes Google and summarizes locally
-- **Screen reading** — AccessibilityService reads UI, extracts text, finds clickable elements
-- **Notification monitoring** — NotificationListenerService catches calls, SMS, app alerts
-- **Action execution** — 15+ tools: open apps, send SMS, make calls, set alarms, play media, toggle system settings, search web, summarize pages
+<p align="center">
+  <strong>English</strong>
+</p>
 
-### Automations (No-code Rule Builder)
-- **Missed call → SMS + log** — Auto-reply to missed callers, log to Google Sheets
-- **Location triggers** — Geofencing: mute at work, WiFi on at home, etc.
-- **Photo backup** — Auto-upload new photos to Google Drive/Dropbox
-- **Smart home** — Webhook integration for Home Assistant, IFTTT, Tuya, custom MQTT
-- **Battery/Time/WiFi triggers** — Low battery → power save, time-based routines
-- **Custom rules** — User-defined if-this-then-that with drag-and-drop builder
+<p align="center">
+  <a href="https://github.com/Goutham011/agentic-os/stargazers"><img src="https://img.shields.io/github/stars/Goutham011/agentic-os?style=flat-square&color=gold" alt="GitHub stars" /></a>
+  <a href="https://github.com/Goutham011/agentic-os/releases/latest"><img src="https://img.shields.io/github/v/release/Goutham011/agentic-os?style=flat-square&color=blue" alt="Latest release" /></a>
+  <img src="https://img.shields.io/badge/platform-Android%2010%2B-lightgrey?style=flat-square" alt="Android 10+" />
+  <img src="https://img.shields.io/badge/kotlin-1.9%2B-orange?style=flat-square" alt="Kotlin 1.9+" />
+</p>
 
-### Privacy & Architecture
-- **100% on-device** for core features — No cloud LLM, no analytics, no tracking
-- **Encrypted local storage** — Room + SQLCipher for conversations, rules, preferences
-- **Permission transparency** — Guided onboarding requests all permissions upfront
-- **No root required** — Works on stock Android 10+ (API 29+)
+---
 
-## Architecture
+## Why Agentic OS?
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        ANDROID APP PROCESS                       │
-│  ┌─────────────┐  ┌──────────────────┐  ┌───────────────────┐  │
-│  │ MainActivity │  │ AgentForeground  │  │ PermissionManager │  │
-│  │ (Onboarding) │◄─┤ Service (Brain)  │  │ (Runtime Perms)   │  │
-│  └──────┬──────┘  └────────┬─────────┘  └───────────────────┘  │
-│         │                  │                                       │
-│         │   ┌──────────────┼──────────────┐                      │
-│         │   ▼              ▼              ▼                      │
-│         │ ┌────────┐  ┌───────────┐  ┌──────────┐               │
-│         │ │  LLM   │  │Automation │  │  Tool    │               │
-│         │ │Manager │  │ Engine    │  │ Registry │               │
-│         │ └────┬───┘  └─────┬─────┘  └────┬─────┘               │
-│         │      │            │             │                       │
-│         │      ▼            ▼             ▼                       │
-│         │ ┌─────────────────────────────────────┐                │
-│         │ │         TOOL REGISTRY                │                │
-│         │ │ Apps │ SMS │ Calls │ Media │ Web... │                │
-│         │ └─────────────────────────────────────┘                │
-│         └───────────────────────────────────────────────────────┘ │
-│                              │                                    │
-│                              ▼                                    │
-│ ┌─────────────────────────────────────────────────────────────┐  │
-│ │              SYSTEM SERVICES (Separate Processes)            │  │
-│ │  ┌──────────────┐  ┌──────────────────┐  ┌───────────────┐  │  │
-│ │  │Accessibility │  │ Notification     │  │ Location/     │  │  │
-│ │  │ Service      │  │ Listener Service │  │ Geofence      │  │  │
-│ │  │(Screen Read) │  │(Calls, SMS, Apps)│  │(Triggers)     │  │  │
-│ │  └──────────────┘  └──────────────────┘  └───────────────┘  │  │
-│ └─────────────────────────────────────────────────────────────┘  │
-```
+Your phone should work for you, not the other way around. Agentic OS gives you a programmable assistant that learns from you, protects your privacy, and automates the tedious parts of your digital life.
 
-## Tech Stack
+- **Free, forever.** No subscription, no in-app purchases, no "upgrade to Pro", no nag screens. MIT licensed.
+- **Zero telemetry.** No analytics, no crash reporter, no trackers, no cloud LLM by default. Your conversations stay on your device.
+- **100% on-device** for core features — Local LLM reasoning, no cloud API keys required.
+- **15+ built-in tools** — Apps, SMS, Calls, Media, System Settings, Web search, PDF summarize, and more.
+- **No root required** — Works on stock Android 10+ (API 29+) with just standard permissions.
+- **Privacy first.** SQLCipher encrypted database for all conversations, rules, and preferences.
 
-| Layer | Technology |
-|-------|------------|
+---
+
+## Features at a glance
+
+<table>
+<tr>
+<td width="33%" valign="top">
+
+### 🎤 Voice Assistant
+- **"Hey Agent"** wake word detection
+- Continuous listening mode
+- On-device STT/TTS
+- MediaPipe LLM for local reasoning
+
+</td>
+<td width="33%" valign="top">
+
+### 🤖 Automation Engine
+- Missed call → SMS auto-reply
+- Location geofencing triggers
+- Photo auto-backup to Google Drive
+- System event triggers (battery, WiFi, time)
+
+</td>
+<td width="33%" valign="top">
+
+### 🛡️ Protected Mode
+- Encrypted local storage (SQLCipher)
+- Transparent permission model
+- No data leaves your device
+- Open source, audit ready
+
+</td>
+</tr>
+</table>
+
+---
+
+## Features in detail
+
+### 🎤 Voice Assistant
+| Feature | Description |
+|---------|-------------|
+| **Wake Word** | Porcupine-based "Hey Agent" detection for hands-free activation |
+| **On-device LLM** | MediaPipe LLM Inference supports Gemini Nano, Phi-3, SmolLM |
+| **Web search fallback** | Google scraping with local summarization when internet access needed |
+| **Screen reading** | AccessibilityService reads UI text and suggests actions |
+| **15+ Tools** | open apps, send SMS, make calls, set alarms, play media, toggle settings, search web, summarize pages |
+
+### 🤖 Automation Engine
+| Trigger Type | Example Action |
+|--------------|----------------|
+| Missed Call | Auto-reply: "Hi, I'm busy. Will call back soon!" |
+| Location | Mute at work, WiFi on at home |
+| Photo Added | Upload to Google Drive/Dropbox |
+| Time | Goodnight routine at 11 PM |
+| Battery Low | Enable power save mode |
+| Custom Events | Webhook integration for Home Assistant, IFTTT |
+
+### 📱 Android Architecture
+| Component | Technology |
+|-----------|------------|
 | Language | Kotlin 1.9+ |
 | UI | Jetpack Compose (Material 3) |
 | DI | Hilt |
 | Database | Room + SQLCipher |
 | Background | WorkManager + Foreground Service |
 | Networking | Retrofit + OkHttp + Jsoup |
-| On-device LLM | MediaPipe LLM Inference |
 | STT | Android SpeechRecognizer |
 | TTS | Android TextToSpeech |
 | Wake Word | Porcupine (Picovoice) |
-| OCR | ML Kit Text Recognition |
-| Build | Gradle KTS + Version Catalog |
 
-## Project Structure
+---
 
+## How to use
+
+### Install
+
+1. Download the latest APK from [Releases](https://github.com/Goutham011/agentic-os/releases/latest)
+2. Enable "Install unknown apps" in Settings → Apps → Special app access
+3. Open the APK and tap Install
+
+### Onboarding Flow
+1. **Launch** — App opens onboarding screen
+2. **Permissions** — Swipe through 5 groups (Communication, Location, Media, System, Special)
+3. **Grant Runtime Permissions** — Tap "Grant Permissions" on each screen
+4. **Enable Special Access** — Tap "Enable" for Accessibility, Notifications, Usage Stats, Overlay, Exact Alarms
+5. **Finish** — App starts foreground service, shows persistent notification
+
+### Try Commands
 ```
-Agentic_OS/
-├── Plan.md              # Project plan, timeline, risks
-├── Architecture.md      # System architecture, components, data flow
-├── Agent.md             # Agent spec, tools, prompts, automation rules
-└── android-app/         # Android project
-    ├── app/
-    │   ├── src/main/
-    │   │   ├── java/com/agenticos/agent/
-    │   │   │   ├── MainActivity.kt           # Permission onboarding UI
-    │   │   │   ├── AgenticOSApplication.kt   # Hilt entry point
-    │   │   │   ├── BootReceiver.kt           # Auto-start on boot
-    │   │   │   ├── service/
-    │   │   │   │   └── AgentForegroundService.kt  # Main agent loop
-    │   │   │   ├── accessibility/
-    │   │   │   │   ├── ScreenReaderAccessibilityService.kt
-    │   │   │   │   └── NotificationListenerServiceImpl.kt
-    │   │   │   ├── automation/
-    │   │   │   │   └── AutomationEngine.kt   # Rule evaluation + workers
-    │   │   │   ├── tools/
-    │   │   │   │   └── Tools.kt              # 15+ tool implementations
-    │   │   │   ├── llm/
-    │   │   │   │   └── LLMManager.kt         # Rule-based + MediaPipe
-    │   │   │   ├── voice/
-    │   │   │   │   └── VoiceManager.kt       # STT/TTS + Porcupine
-    │   │   │   ├── data/
-    │   │   │   │   ├── Database.kt
-    │   │   │   │   └── Daos.kt
-    │   │   │   └── models/
-    │   │   │       └── Models.kt
-    │   │   ├── res/
-    │   │   │   ├── xml/                      # Accessibility, file paths, backup
-    │   │   │   └── values/                   # Strings, colors, themes
-    │   │   └── AndroidManifest.xml
-    │   ├── build.gradle.kts
-    │   └── proguard-rules.pro
-    ├── build.gradle.kts
-    ├── settings.gradle.kts
-    └── gradle.properties
+"Hey Agent, open YouTube"
+"Hey Agent, play LoFi Girl on YouTube"
+"Hey Agent, set alarm for 7 AM"
+"Hey Agent, text Mom I'm on my way"
+"Hey Agent, call Dad"
+"Hey Agent, what's the news today?"
+"Hey Agent, summarize https://example.com/article"
+"Hey Agent, turn on WiFi"
+"Hey Agent, set ringer to silent"
 ```
 
-## Getting Started
+---
+
+## Development
 
 ### Prerequisites
 - Android Studio Ladybug (2024.2) or later
@@ -136,54 +152,21 @@ cd android-app
 adb install app/build/outputs/apk/debug/app-debug.apk
 ```
 
-### Onboarding Flow
-1. **Install & Open** — App launches onboarding screen
-2. **Permission Groups** — Swipe through 5 groups (Communication, Location, Media, System, Special)
-3. **Grant Runtime Permissions** — Tap "Grant Permissions" on each screen
-4. **Enable Special Access** — Tap "Enable" for Accessibility, Notifications, Usage Stats, Overlay, Exact Alarms
-5. **Finish** — App starts foreground service, shows persistent notification
-
-### Testing Commands (Voice or Text)
-```
-"Hey Agent, open YouTube"
-"Hey Agent, play LoFi Girl on YouTube"
-"Hey Agent, set alarm for 7 AM"
-"Hey Agent, text Mom I'm on my way"
-"Hey Agent, call Dad"
-"Hey Agent, what's the news today?"
-"Hey Agent, summarize https://example.com/article"
-"Hey Agent, turn on WiFi"
-"Hey Agent, set ringer to silent"
-"Hey Agent, turn on Bluetooth"
-```
-
-## Development
-
-### Key Classes to Extend
-
-| Feature | File | Notes |
-|---------|------|-------|
+### Key Files to Extend
+| Feature | File | Description |
+|---------|------|-------------|
 | Add new tool | `tools/Tools.kt` | Implement `Tool` interface, register in `ToolRegistry` |
 | New automation trigger | `automation/AutomationEngine.kt` | Add `TriggerType`, update `evaluateTriggers()` |
-| Custom LLM | `llm/LLMManager.kt` | Implement `LLMManager` interface, swap in Hilt module |
-| Wake word | `voice/VoiceManager.kt` | Integrate Porcupine or custom TFLite model |
-
-### Hilt Modules (for production)
-```kotlin
-// In a Hilt module
-@Provides
-@Singleton
-fun provideLLMManager(@ApplicationContext context: Context): LLMManager {
-    return MediaPipeLLMManager(context) // or RuleBasedLLMManager for testing
-}
-```
+| Custom LLM | `llm/LLMManager.kt` | Implement `LLMManager` interface |
+| New wake word | `voice/VoiceManager.kt` | Integrate alternative keyword spotting |
 
 ### Testing Automation Rules
 ```kotlin
-// Manual trigger for testing
 val engine = AutomationEngine(context)
-engine.triggerManually(TriggerType.MISSED_CALL, mapOf("number" to "+15551234567"))
+engine.triggerManually(TriggerType.MISSED_CALL, mapOf("number" to "+155****4567"))
 ```
+
+---
 
 ## Permissions Reference
 
@@ -193,44 +176,46 @@ engine.triggerManually(TriggerType.MISSED_CALL, mapOf("number" to "+15551234567"
 | Read SMS | `READ_SMS` | Runtime | ✅ |
 | Make Calls | `CALL_PHONE` | Runtime | ✅ |
 | Read Call Log | `READ_CALL_LOG` | Runtime | ✅ |
-| Contacts | `READ_CONTACTS` | Runtime | ✅ |
 | Location (precise) | `ACCESS_FINE_LOCATION` | Runtime | ✅ |
 | Location (background) | `ACCESS_BACKGROUND_LOCATION` | Runtime | ✅ |
 | Microphone | `RECORD_AUDIO` | Runtime | ✅ |
 | Camera | `CAMERA` | Runtime | ✅ |
 | Notifications | `POST_NOTIFICATIONS` | Runtime | ✅ |
-| Calendar | `READ_CALENDAR` | Runtime | ✅ |
-| Exact Alarms | `SCHEDULE_EXACT_ALARM` | Runtime | ✅ |
-| Media Files | `READ_MEDIA_*` | Runtime | ✅ |
 | **Accessibility** | `BIND_ACCESSIBILITY_SERVICE` | Special | ❌ (Settings) |
 | **Notification Listener** | `BIND_NOTIFICATION_LISTENER_SERVICE` | Special | ❌ (Settings) |
-| **Usage Stats** | `PACKAGE_USAGE_STATS` | Special | ❌ (Settings) |
-| **Overlay** | `SYSTEM_ALERT_WINDOW` | Special | ❌ (Settings) |
 
-## Known Limitations (MVP)
+---
 
-1. **No call audio interception** — Cannot answer calls programmatically (requires `AnswerCall` signature permission)
-2. **Accessibility fragility** — Some apps block accessibility (banking, secure keyboards)
+## Known Limitations
+
+1. **No call audio interception** — Cannot answer calls programmatically
+2. **Accessibility fragility** — Some banking apps block accessibility access
 3. **Screen reading accuracy** — ~70-85% for complex UIs; OCR fallback helps
-4. **Battery impact** — Foreground service + accessibility = ~10-15%/day; optimize with adaptive polling
-5. **Play Store policy** — Accessibility services for automation may be rejected; distribute via GitHub/sideload for now
+4. **Battery impact** — ~10-15%/day; optimize with adaptive polling
+5. **Play Store policy** — Distribute via GitHub/sideload to avoid policy rejection
 6. **Web scraping** — Google HTML structure changes; use Custom Search API for production
+
+---
 
 ## Roadmap
 
 - [ ] MediaPipe LLM integration (Gemini Nano / Phi-3)
-- [ ] Porcupine wake word ("Hey Agent")
+- [ ] Porcupine wake word ("Hey Agent") — currently using basic keyword spotting
 - [ ] Google Drive/Dropbox OAuth for photo backup
 - [ ] Home Assistant / IFTTT webhook templates
-- [ ] Automation builder UI (drag-drop)
+- [ ] Automation builder UI (drag-drop interface)
 - [ ] Widget + Quick Settings tile
 - [ ] Conversation memory with vector embeddings
 - [ ] Multi-language support
-- [ ] Wear OS companion
+- [ ] Wear OS companion app
+
+---
 
 ## License
 
-MIT License — See LICENSE file for details.
+MIT License — See [LICENSE](LICENSE) file for details.
+
+---
 
 ## Contributing
 
@@ -242,4 +227,14 @@ MIT License — See LICENSE file for details.
 
 ---
 
-**Built for the "Agentic OS" vision — Your phone, truly yours.**
+## Acknowledgments
+
+- [Picovoice](https://picovoice.ai/) — Porcupine wake word
+- [MediaPipe](https://developers.google.com/mediapipe) — LLM inference
+- [Room](https://developer.android.com/topic/libraries/architecture/room) — SQLCipher database
+- [Hilt](https://developer.google.com/training/dependency-injection/hilt-android) — DI framework
+
+<p align="center">
+  <strong>Built for the "Agentic OS" vision — Your phone, truly yours.</strong><br>
+  If it saves you time, a ⭐ helps others find it.
+</p>
