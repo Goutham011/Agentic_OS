@@ -1,0 +1,61 @@
+# Android
+/.Android/
+/app/build/
+/.buildozer/
+/local.properties
+
+# Keystore files
+/*.jks
+/*.keystore
+
+# External native build folder generated in Android Studio 
+**/libs/**/OBJDUMP
+**/libs/**/native-libs
+
+# ProGuard
+*^proguard*^
+!proguard-*
+
+# Build IDs
+**/build_id*
+
+**/*.apk.pre-keystores/
+*.apk.bak
+
+# Fastlane
+//for
+/.env
+/.env.production
+/fastlane
+/output.json
+
+# Gradle
+**/gradle.properties
+
+# NDK
+/**/*.so
+
+# Miscellaneous
+*.log
+*.tmp
+*.temp
+.DS_Store
+
+# Android Studio
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Obsidian
+.vault/
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

@@ -1,0 +1,61 @@
+<resources>
+    <string name="app_name">Agentic OS</string>
+    
+    <!-- Accessibility Service -->
+    <string name="accessibility_service_name">Agentic OS Screen Reader</string>
+    <string name="accessibility_service_description">Reads screen content and performs UI actions for the Agentic OS assistant. Allows the assistant to open apps, type messages, and automate tasks.</string>
+    
+    <!-- Permissions Rationale -->
+    <string name="perm_rationale_sms">Needed to send and read SMS messages for auto-reply and messaging commands.</string>
+    <string name="perm_rationale_calls">Needed to make phone calls and read call logs for missed call automation.</string>
+    <string name="perm_rationale_contacts">Needed to access contacts for messaging and calling by name.</string>
+    <string name="perm_rationale_location">Needed for location-based automations (geofencing).</string>
+    <string name="perm_rationale_microphone">Needed for voice commands and speech recognition.</string>
+    <string name="perm_rationale_camera">Needed for potential future features (QR scanning, etc.).</string>
+    <string name="perm_rationale_notifications">Needed to show assistant responses and status.</string>
+    <string name="perm_rationale_calendar">Needed to read calendar events for scheduling.</string>
+    <string name="perm_rationale_exact_alarm">Needed for precise alarm timing.</string>
+    <string name="perm_rationale_media">Needed to read media files and control playback.</string>
+    <string name="perm_rationale_accessibility">Enable in Settings → Accessibility → Agentic OS Screen Reader. Allows the assistant to read your screen and tap buttons.</string>
+    <string name="perm_rationale_notification_listener">Enable in Settings → Notifications → Notification Access → Agentic OS. Allows auto-reply to missed calls and reading notifications.</string>
+    <string name="perm_rationale_usage_stats">Enable in Settings → Digital Wellbeing → Usage Access → Agentic OS. Allows learning your patterns for smart automations.</string>
+    <string name="perm_rationale_overlay">Enable in Settings → Apps → Special Access → Display over other apps → Agentic OS. Allows floating microphone button.</string>
+    
+    <!-- UI Strings -->
+    <string name="onboarding_welcome_title">Welcome to Agentic OS</string>
+    <string name="onboarding_welcome_desc">Your personal phone assistant that runs entirely on-device. No cloud required for core features.</string>
+    <string name="onboarding_comm_title">Communication</string>
+    <string name="onboarding_comm_desc">Send texts, make calls, read messages, and auto-reply to missed calls.</string>
+    <string name="onboarding_location_title">Location Triggers</string>
+    <string name="onboarding_location_desc">Automate actions when you arrive at work, leave home, or enter geofences.</string>
+    <string name="onboarding_media_title">Media & Files</string>
+    <string name="onboarding_media_desc">Play music, backup photos automatically, and control media playback.</string>
+    <string name="onboarding_system_title">System Control</string>
+    <string name="onboarding_system_desc">Set alarms, toggle WiFi/Bluetooth, get notifications, and use voice commands.</string>
+    <string name="onboarding_special_title">Special Access</string>
+    <string name="onboarding_special_desc">Required for screen reading, auto-reply, and notification monitoring.</string>
+    <string name="onboarding_ready_title">You\'re All Set!</string>
+    <string name="onboarding_ready_desc">Agentic OS is ready. Tap the mic button or say \"Hey Agent\" to start.</string>
+    
+    <!-- Status -->
+    <string name="status_listening">Listening…</string>
+    <string name="status_thinking">Thinking…</string>
+    <string name="status_ready">Ready</string>
+    <string name="status_hotword_enabled">Hotword enabled</string>
+    <string name="status_hotword_disabled">Hotword disabled</string>
+    
+    <!-- Errors -->
+    <string name="error_speech_not_available">Speech recognition not available on this device</string>
+    <string name="error_permission_denied">Permission denied. Please enable in Settings.</string>
+    <string name="error_tool_failed">Action failed: %s</string>
+    <string name="error_llm_failed">Assistant error. Try again.</string>
+    
+    <!-- Automation Templates -->
+    <string name="template_missed_call">Missed Call → SMS + Log</string>
+    <string name="template_home_arrival">Home → Silent + WiFi On</string>
+    <string name="template_work_exit">Work → WiFi Off</string>
+    <string name="template_photo_backup">Photo Backup to Cloud</string>
+    <string name="template_low_battery">Low Battery → Power Save</string>
+    <string name="template_night_mode">Night Mode (22:00)</string>
+    <string name="template_morning_brief">Morning Briefing (07:00)</string>
+</resources>
