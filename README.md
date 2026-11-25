@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/app_icon.png" width="150" alt="Agentic OS Logo" />
+  <img src="assets/app_icon.svg" width="150" alt="Agentic OS Logo" />
 </p>
 
 <h1 align="center">Agentic OS</h1>
