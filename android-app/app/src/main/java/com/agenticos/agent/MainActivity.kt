@@ -8,33 +8,35 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.accessibilityservice.AccessibilityServiceInfo
+import android.app.NotificationManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.icons.Icons
-import androidx.compose.material3.icons.filled.CheckCircle
-import androidx.compose.material3.icons.filled.Help
-import androidx.compose.material3.icons.filled.Mic
-import androidx.compose.material3.icons.filled.Settings
+import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Photo
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -58,6 +60,10 @@ import java.util.concurrent.TimeUnit
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
     
+    companion object {
+        private const val TAG = "MainActivity"
+    }
+
     // Permission groups
     private val communicationPermissions = arrayOf(
         Manifest.permission.SEND_SMS,
@@ -105,25 +111,26 @@ class MainActivity : ComponentActivity() {
     private val exactAlarmLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ -> updatePermissionStates() }
     
     // UI State
-    private var currentStep by remember { mutableStateOf(0) }
-    private var permissionStates by remember { mutableStateOf<Map<String, Boolean>>(emptyMap()) }
-    private var isChecking by remember { mutableStateOf(false) }
+    private var currentStep by mutableStateOf(0)
+    private var permissionStates by mutableStateOf<Map<String, Boolean>>(emptyMap())
+    private var isChecking by mutableStateOf(false)
     
     private val steps = listOf(
-        OnboardingStep(0, "Welcome", "Welcome to Agentic OS", "Your personal phone assistant that runs entirely on-device. Let's set up permissions so I can help you.", Icons.Default.Mic),
-        OnboardingStep(1, "Communication", "Calls, SMS & Contacts", "Send texts, make calls, read messages, and auto-reply to missed calls.", Icons.Default.Chat),
-        OnboardingStep(2, "Location", "Location Triggers", "Automate actions when you arrive at work, leave home, or enter geofences.", Icons.Default.LocationOn),
-        OnboardingStep(3, "Media & Files", "Photos, Music & Backups", "Play music, backup photos automatically, and control media playback.", Icons.Default.PhotoLibrary),
-        OnboardingStep(4, "System", "Alarms, WiFi, Bluetooth & More", "Set alarms, toggle system settings, get notifications, and use voice commands.", Icons.Default.Settings),
-        OnboardingStep(5, "Special Access", "Accessibility & Notifications", "Required for screen reading, auto-reply, and notification monitoring. These need manual enable in Settings.", Icons.Default.Security),
-        OnboardingStep(6, "Ready", "You're All Set!", "Agentic OS is ready. Tap the mic button or say \"Hey Agent\" to start.", Icons.Default.CheckCircle)
+        OnboardingStep(0, "welcome", "Welcome", "Welcome to Agentic OS\nYour personal phone assistant that runs entirely on-device.\nLet's set up permissions so I can help you.", Icons.Default.Mic),
+        OnboardingStep(1, "communication", "Communication", "Calls, SMS & Contacts\nSend texts, make calls, read messages, and auto-reply to missed calls.", Icons.Default.Phone),
+        OnboardingStep(2, "location", "Location", "Location Triggers\nAutomate actions when you arrive at work, leave home, or enter geofences.", Icons.Default.LocationOn),
+        OnboardingStep(3, "media", "Media & Files", "Photos, Music & Backups\nPlay music, backup photos automatically, and control media playback.", Icons.Default.Photo),
+        OnboardingStep(4, "system", "System", "Alarms, WiFi, Bluetooth & More\nSet alarms, toggle system settings, get notifications, and use voice commands.", Icons.Default.Settings),
+        OnboardingStep(5, "special", "Special Access", "Accessibility & Notifications\nRequired for screen reading, auto-reply, and notification monitoring.\nThese need manual enable in Settings.", Icons.Default.Lock),
+        OnboardingStep(6, "ready", "Ready", "You're All Set!\nAgentic OS is ready.\nTap the mic button or say \"Hey Agent\" to start.", Icons.Default.CheckCircle)
     )
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            MaterialTheme {
+            MaterialTheme(
+                colorScheme = lightColorScheme()
+            ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -131,15 +138,12 @@ class MainActivity : ComponentActivity() {
                     Scaffold(
                         topBar = {
                             TopAppBar(
-                                title = { Text("Agentic OS Setup") },
-                                colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceContainer
-                                )
+                                title = { Text("Agentic OS Setup") }
                             )
                         }
                     ) { padding ->
                         OnboardingScreen(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.padding(padding),
                             currentStep = currentStep,
                             steps = steps,
                             permissionStates = permissionStates,
@@ -161,7 +165,7 @@ class MainActivity : ComponentActivity() {
         
         updatePermissionStates()
     }
-    
+
     private fun goToNextStep() {
         if (currentStep < steps.lastIndex) {
             currentStep++
@@ -171,54 +175,54 @@ class MainActivity : ComponentActivity() {
             else if (currentStep == 4) requestRuntimePermissionsForGroup(systemPermissions)
         }
     }
-    
+
     private fun goToPreviousStep() {
         if (currentStep > 0) currentStep--
     }
-    
+
     private fun requestRuntimePermissions() {
         val toRequest = allRuntimePermissions.filter { ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED }
         if (toRequest.isNotEmpty()) {
             requestPermissionsLauncher.launch(toRequest.toTypedArray())
         }
     }
-    
+
     private fun requestRuntimePermissionsForGroup(perms: Array<String>) {
         val toRequest = perms.filter { ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED }
         if (toRequest.isNotEmpty()) {
             requestPermissionsLauncher.launch(toRequest.toTypedArray())
         }
     }
-    
+
     private fun openAccessibilitySettings() {
         val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
         accessibilityLauncher.launch(intent)
     }
-    
+
     private fun openNotificationListenerSettings() {
         val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
         notificationListenerLauncher.launch(intent)
     }
-    
+
     private fun openUsageStatsSettings() {
         val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
         usageStatsLauncher.launch(intent)
     }
-    
+
     private fun openOverlaySettings() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
             overlayLauncher.launch(intent)
         }
     }
-    
+
     private fun openExactAlarmSettings() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
             exactAlarmLauncher.launch(intent)
         }
     }
-    
+
     private fun updatePermissionStates() {
         val states = mutableMapOf<String, Boolean>()
         
@@ -237,28 +241,42 @@ class MainActivity : ComponentActivity() {
         
         permissionStates = states
     }
-    
+
     private fun isAccessibilityServiceEnabled(): Boolean {
         val accessibilityManager = getSystemService(android.view.accessibility.AccessibilityManager::class.java)
-        val services = accessibilityManager.getEnabledAccessibilityServiceList(android.view.accessibility.AccessibilityServiceInfo.FEEDBACK_GENERIC)
-        return services.any { it.id.contains(packageName) }
+        val services = accessibilityManager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_GENERIC)
+        return services.isNotEmpty() // Check if any accessibility service is enabled
     }
-    
+
     private fun isNotificationListenerEnabled(): Boolean {
-        val nm = getSystemService(android.service.notification.NotificationManager::class.java)
-        val enabledListeners = nm.enabledNotificationListeners
-        return enabledListeners?.any { it?.flattenToString()?.contains(packageName) == true } == true
+        val nm = getSystemService(NotificationManager::class.java)
+        // Check if this package is in the enabled notification listeners
+        return try {
+            // Try to use reflection for notificationListenerSettings since it might not be available in all build targets
+            val settingsClass = Class.forName("android.app.NotificationManager\$NotificationListenerSettings")
+            val method = nm!!.javaClass.getMethod("getNotificationListenerSettings")
+            val settings = method.invoke(nm)
+            val enabledField = settingsClass.getField("enabledNotificationListeners")
+            val enabledListeners = enabledField.get(settings) as? String
+            if (enabledListeners != null) {
+                enabledListeners.split(":").contains(packageName) || enabledListeners.contains(packageName)
+            } else {
+                true // Assume enabled if we can't check
+            }
+        } catch (e: Exception) {
+            true // Assume enabled if check fails
+        }
     }
-    
+
     private fun isUsageStatsEnabled(): Boolean {
         val appOps = getSystemService(android.app.AppOpsManager::class.java)
         val mode = appOps.checkOpNoThrow(android.app.AppOpsManager.OPSTR_GET_USAGE_STATS, android.os.Process.myUid(), packageName)
         return mode == android.app.AppOpsManager.MODE_ALLOWED
     }
-    
+
     private fun startAssistant() {
         // Start the foreground service
-        val intent = Intent(this, AgentForegroundService::class.java)
+        val intent = Intent(this, com.agenticos.agent.service.AgentForegroundService::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(intent)
         } else {
@@ -318,7 +336,7 @@ fun OnboardingScreen(
         ) {
             steps.forEachIndexed { index, s ->
                 val isActive = index <= currentStep
-                androidx.compose.foundation.layout.Box(
+                Box(
                     modifier = Modifier
                         .size(40.dp)
                         .padding(horizontal = 4.dp),
@@ -339,21 +357,21 @@ fun OnboardingScreen(
         // Step content
         Card(
             modifier = Modifier.fillMaxWidth(),
-            elevation = 4.dp
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Icon(step.icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(64.dp))
-                androidx.compose.foundation.layout.Spacer(modifier = Modifier.padding(top = 16.dp))
+                Spacer(modifier = Modifier.padding(top = 16.dp))
                 Text(step.title, fontSize = 24.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-                androidx.compose.foundation.layout.Spacer(modifier = Modifier.padding(top = 8.dp))
+                Spacer(modifier = Modifier.padding(top = 8.dp))
                 Text(step.description, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
                 
-                // Permission checklist for steps 1-5
+                // Permission checklist for steps 1-4
                 if (step.index in 1..4) {
-                    androidx.compose.foundation.layout.Spacer(modifier = Modifier.padding(top = 16.dp))
+                    Spacer(modifier = Modifier.padding(top = 16.dp))
                     PermissionChecklist(
                         stepIndex = step.index,
                         permissionStates = permissionStates,
@@ -364,7 +382,7 @@ fun OnboardingScreen(
                 
                 // Special permissions for step 5
                 if (step.index == 5) {
-                    androidx.compose.foundation.layout.Spacer(modifier = Modifier.padding(top = 16.dp))
+                    Spacer(modifier = Modifier.padding(top = 16.dp))
                     SpecialPermissionChecklist(
                         permissionStates = permissionStates,
                         onOpenAccessibility = onOpenAccessibility,
@@ -383,19 +401,17 @@ fun OnboardingScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             if (currentStep > 0) {
-                Button(onClick = onPrevious) { Text("Back") }
+                TextButton(onClick = onPrevious) { Text("Back") }
             } else {
-                androidx.compose.foundation.layout.Box(modifier = Modifier.weight(1f))
+                Box(modifier = Modifier.weight(1f))
             }
             
             if (currentStep < steps.lastIndex) {
-                Button(onClick = onNext, modifier = Modifier.weight(1f, fill = false)) {
+                Button(onClick = onNext) {
                     Text(if (currentStep == steps.lastIndex - 1) "Finish" else "Next")
                 }
             } else {
-                Button(onClick = onStartAssistant, modifier = Modifier.weight(1f, fill = false), colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )) {
+                Button(onClick = onStartAssistant) {
                     Text("Start Assistant")
                 }
             }
@@ -448,10 +464,10 @@ fun PermissionChecklist(
                 if (isChecking) {
                     CircularProgressIndicator(modifier = Modifier.size(20.dp))
                 } else {
-                    androidx.compose.material3.Checkbox(
+                    Checkbox(
                         checked = granted,
                         onCheckedChange = null, // Read-only, request via button
-                        colors = androidx.compose.material3.CheckboxDefaults.colors(
+                        colors = CheckboxDefaults.colors(
                             checkedColor = MaterialTheme.colorScheme.primary
                         )
                     )
@@ -489,7 +505,7 @@ fun SpecialPermissionChecklist(
             val granted = permissionStates[item.key] == true
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = androidx.compose.material3.CardDefaults.cardColors(
+                colors = CardDefaults.cardColors(
                     containerColor = if (granted) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHighest
                 )
             ) {
@@ -505,7 +521,7 @@ fun SpecialPermissionChecklist(
                         Text(item.description, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     if (granted) {
-                        androidx.compose.material3.Icon(androidx.compose.material3.icons.Icons.Default.CheckCircle, contentDescription = "Granted", tint = MaterialTheme.colorScheme.primary)
+                        Icon(Icons.Default.Check, contentDescription = "Granted", tint = MaterialTheme.colorScheme.primary)
                     } else {
                         Button(onClick = item.onClick) { Text("Enable") }
                     }

@@ -16,10 +16,10 @@
     <string name="perm_rationale_calendar">Needed to read calendar events for scheduling.</string>
     <string name="perm_rationale_exact_alarm">Needed for precise alarm timing.</string>
     <string name="perm_rationale_media">Needed to read media files and control playback.</string>
-    <string name="perm_rationale_accessibility">Enable in Settings → Accessibility → Agentic OS Screen Reader. Allows the assistant to read your screen and tap buttons.</string>
-    <string name="perm_rationale_notification_listener">Enable in Settings → Notifications → Notification Access → Agentic OS. Allows auto-reply to missed calls and reading notifications.</string>
-    <string name="perm_rationale_usage_stats">Enable in Settings → Digital Wellbeing → Usage Access → Agentic OS. Allows learning your patterns for smart automations.</string>
-    <string name="perm_rationale_overlay">Enable in Settings → Apps → Special Access → Display over other apps → Agentic OS. Allows floating microphone button.</string>
+    <string name="perm_rationale_accessibility">Enable in Settings &#8594; Accessibility &#8594; Agentic OS Screen Reader. Allows the assistant to read your screen and tap buttons.</string>
+    <string name="perm_rationale_notification_listener">Enable in Settings &#8594; Notifications &#8594; Notification Access &#8594; Agentic OS. Allows auto-reply to missed calls and reading notifications.</string>
+    <string name="perm_rationale_usage_stats">Enable in Settings &#8594; Digital Wellbeing &#8594; Usage Access &#8594; Agentic OS. Allows learning your patterns for smart automations.</string>
+    <string name="perm_rationale_overlay">Enable in Settings &#8594; Apps &#8594; Special Access &#8594; Display over other apps &#8594; Agentic OS. Allows floating microphone button.</string>
     
     <!-- UI Strings -->
     <string name="onboarding_welcome_title">Welcome to Agentic OS</string>
@@ -28,14 +28,14 @@
     <string name="onboarding_comm_desc">Send texts, make calls, read messages, and auto-reply to missed calls.</string>
     <string name="onboarding_location_title">Location Triggers</string>
     <string name="onboarding_location_desc">Automate actions when you arrive at work, leave home, or enter geofences.</string>
-    <string name="onboarding_media_title">Media & Files</string>
+    <string name="onboarding_media_title">Media &amp; Files</string>
     <string name="onboarding_media_desc">Play music, backup photos automatically, and control media playback.</string>
     <string name="onboarding_system_title">System Control</string>
     <string name="onboarding_system_desc">Set alarms, toggle WiFi/Bluetooth, get notifications, and use voice commands.</string>
     <string name="onboarding_special_title">Special Access</string>
     <string name="onboarding_special_desc">Required for screen reading, auto-reply, and notification monitoring.</string>
-    <string name="onboarding_ready_title">You\'re All Set!</string>
-    <string name="onboarding_ready_desc">Agentic OS is ready. Tap the mic button or say \"Hey Agent\" to start.</string>
+    <string name="onboarding_ready_title">All Set</string>
+    <string name="onboarding_ready_desc">Agentic OS is ready. Tap the mic button or say &quot;Hey Agent&quot; to start.</string>
     
     <!-- Status -->
     <string name="status_listening">Listening…</string>

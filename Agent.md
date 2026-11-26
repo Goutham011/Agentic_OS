@@ -584,3 +584,57 @@ suspend fun correctWithLLM(rawText: String): CorrectedCommand {
 6. **UI Framework**: Jetpack Compose (modern) or XML (familiar)? I used Compose in architecture but can adapt.
 7. **Min SDK**: Android 8 (API 26), 10 (29), or 12 (31)? Lower = more devices, higher = better APIs.
 8. **Distribution**: Play Store (strict on accessibility) or GitHub/sideload (freer)?
+
+## Engineering Excellence Standards
+
+### 1. Code Quality & Simplicity
+- Write the minimum code needed to solve the problem.
+- Prefer simple, direct implementations over complex abstractions.
+- Remove dead code, unused variables, and unnecessary comments.
+- Every line must have a clear purpose.
+
+### 2. Preserve Existing Functionality
+- Do not remove or change working features.
+- Maintain all user workflows and API contracts.
+- Run existing tests before and after changes.
+- Preserve UI behavior and accessibility.
+
+### 3. Performance
+- Use efficient algorithms and data structures.
+- Avoid unnecessary network requests and database queries.
+- Manage resources (files, connections, listeners) properly.
+- Optimize startup and memory usage.
+
+### 4. Security
+- Validate all untrusted input.
+- Use parameterized database queries.
+- Protect sensitive data with SQLCipher encryption.
+- Never hardcode credentials or API keys.
+
+### 5. Error Handling
+- Handle all edge cases explicitly.
+- Provide meaningful error messages.
+- Never silently swallow exceptions.
+- Implement proper retry logic for transient failures.
+
+### 6. Testing
+- Add tests for new functionality.
+- Verify existing tests still pass.
+- Test boundary conditions and failure modes.
+
+### 7. ASD-STE100 Simplified Technical English
+- Use clear, simple vocabulary.
+- Avoid complex sentences.
+- Define all technical terms.
+- Use active voice.
+- Limit each sentence to one main idea.
+- Use numbers instead of words for 0-9.
+- Capitalize only proper nouns and the first word of sentences.
+
+### 8. Implementation Checklist
+- [ ] Understand the existing codebase before modifying.
+- [ ] Implement the simplest solution that works.
+- [ ] Add or update tests.
+- [ ] Run lint and type checks.
+- [ ] Verify no regressions.
+- [ ] Document complex logic.

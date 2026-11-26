@@ -3,18 +3,16 @@ package com.agenticos.agent.accessibility
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Intent
-import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.agenticos.agent.utils.ScreenContent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.util.concurrent.ConcurrentLinkedQueue
+import com.agenticos.agent.models.ToolResult
+import com.agenticos.agent.utils.JsonProvider
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonPrimitive
 
 class ScreenReaderAccessibilityService : AccessibilityService() {
     companion object {
@@ -24,13 +22,17 @@ class ScreenReaderAccessibilityService : AccessibilityService() {
         const val EXTRA_PACKAGE_NAME = "package_name"
         const val EXTRA_EVENT_TYPE = "event_type"
         
-        // Queue for latest screen content
-        private val contentQueue = ConcurrentLinkedQueue<ScreenContent>()
+        private val contentQueue = ArrayDeque<ScreenContent>(10)
         private const val MAX_QUEUE_SIZE = 10
+        
+        // FIX #7: Add depth limit to prevent stack overflow from unbounded recursion
+        private const val MAX_DEPTH = 50
+        
+        fun getLatestContent(): ScreenContent? = contentQueue.lastOrNull()
+        fun getAllContent(): List<ScreenContent> = contentQueue.toList()
     }
     
     private var lastPackageName = ""
-    private val handler = Handler(Looper.getMainLooper())
     
     override fun onCreate() {
         super.onCreate()
@@ -56,9 +58,9 @@ class ScreenReaderAccessibilityService : AccessibilityService() {
             
             content?.let { screenContent ->
                 // Queue the content
-                contentQueue.add(screenContent)
+                contentQueue.addLast(screenContent)
                 while (contentQueue.size > MAX_QUEUE_SIZE) {
-                    contentQueue.poll()
+                    contentQueue.removeFirst()
                 }
                 
                 // Broadcast to agent
@@ -74,7 +76,8 @@ class ScreenReaderAccessibilityService : AccessibilityService() {
         val clickableElements = mutableListOf<ClickableElement>()
         val editTexts = mutableListOf<EditTextElement>()
         
-        traverseNode(root, textBuilder, clickableElements, editTexts)
+        // FIX #7: Use iterative traversal with depth limit instead of unbounded recursion
+        traverseNodeIterative(root, textBuilder, clickableElements, editTexts)
         
         return ScreenContent(
             packageName = packageName,
@@ -86,15 +89,85 @@ class ScreenReaderAccessibilityService : AccessibilityService() {
         )
     }
     
-    private fun traverseNode(
-        node: AccessibilityNodeInfo,
+    // FIX #7: Iterative breadth-first traversal with depth limit to prevent stack overflow
+    private fun traverseNodeIterative(
+        root: AccessibilityNodeInfo,
         textBuilder: StringBuilder,
         clickableElements: MutableList<ClickableElement>,
         editTexts: MutableList<EditTextElement>
     ) {
+        // Use a queue for BFS: Pair(node, depth)
+        val queue = ArrayDeque<Pair<AccessibilityNodeInfo, Int>>()
+        queue.add(root to 0)
+        
+        val visited = mutableSetOf<Int>() // Track node identity hashes to avoid cycles
+        
+        while (queue.isNotEmpty()) {
+            val (node, depth) = queue.removeFirst()
+            
+            // Skip if too deep or already visited (detect cycles)
+            if (depth > MAX_DEPTH || visited.contains(node.hashCode())) {
+                continue
+            }
+            visited.add(node.hashCode())
+            
+            // Get text
+            val text = node.text?.toString()?.trim()
+            if (!text.isNullOrBlank()) {
+                textBuilder.append(text).append(" ")
+            }
+            
+            // Check if clickable
+            if (node.isClickable || node.isLongClickable || node.isFocusable) {
+                val className = node.className?.toString() ?: ""
+                val bounds = android.graphics.Rect()
+                node.getBoundsInScreen(bounds)
+                clickableElements.add(ClickableElement(
+                    className = className,
+                    text = text ?: "",
+                    contentDescription = node.contentDescription?.toString() ?: "",
+                    bounds = bounds,
+                    clickable = node.isClickable,
+                    longClickable = node.isLongClickable,
+                    enabled = node.isEnabled
+                ))
+            }
+            
+            // Check if editable
+            if (node.isEditable) {
+                val bounds = android.graphics.Rect()
+                node.getBoundsInScreen(bounds)
+                editTexts.add(EditTextElement(
+                    className = node.className?.toString() ?: "",
+                    hint = node.hintText?.toString() ?: "",
+                    text = text ?: "",
+                    bounds = bounds,
+                    focused = node.isFocused
+                ))
+            }
+            
+            // Add children to queue (reverse order to maintain left-to-right traversal)
+            for (i in node.childCount - 1 downTo 0) {
+                node.getChild(i)?.let { child ->
+                    queue.add(child to depth + 1)
+                }
+            }
+        }
+    }
+    
+    // Keep original recursive method for simple single-level use cases
+    private fun traverseNode(
+        node: AccessibilityNodeInfo,
+        textBuilder: StringBuilder,
+        clickableElements: MutableList<ClickableElement>,
+        editTexts: MutableList<EditTextElement>,
+        depth: Int = 0
+    ) {
+        if (depth > MAX_DEPTH) return
+        
         // Get text
         val text = node.text?.toString()?.trim()
-        if (text.isNotBlank()) {
+        if (!text.isNullOrBlank()) {
             textBuilder.append(text).append(" ")
         }
         
@@ -127,17 +200,18 @@ class ScreenReaderAccessibilityService : AccessibilityService() {
             ))
         }
         
-        // Recurse children
+        // Recurse children with depth limit
         for (i in 0 until node.childCount) {
             node.getChild(i)?.let { child ->
-                traverseNode(child, textBuilder, clickableElements, editTexts)
+                traverseNode(child, textBuilder, clickableElements, editTexts, depth + 1)
             }
         }
     }
     
     private fun broadcastScreenChange(content: ScreenContent) {
+        val json = JsonProvider.json.encodeToString(ScreenContent.serializer(), content)
         val intent = Intent(ACTION_SCREEN_CHANGED).apply {
-            putExtra(EXTRA_SCREEN_CONTENT, kotlinx.serialization.encodeToString(content))
+            putExtra(EXTRA_SCREEN_CONTENT, json)
             putExtra(EXTRA_PACKAGE_NAME, content.packageName)
             putExtra(EXTRA_EVENT_TYPE, content.eventType)
         }
@@ -162,12 +236,47 @@ class ScreenReaderAccessibilityService : AccessibilityService() {
         Log.d(TAG, "Accessibility service connected")
     }
     
-    // ===== ACTION EXECUTION =====
-    
     /** Perform click on element matching description */
     fun performClick(text: String): Boolean {
         val root = rootInActiveWindow ?: return false
-        return findAndClick(root, text)
+        // FIX #7: Use iterative search with depth limit
+        return findAndClickIterative(root, text)
+    }
+    
+    // FIX #7: Iterative search to prevent stack overflow
+    private fun findAndClickIterative(root: AccessibilityNodeInfo, targetText: String): Boolean {
+        val queue = ArrayDeque<AccessibilityNodeInfo>()
+        queue.add(root)
+        val visited = mutableSetOf<Int>()
+        var depth = 0
+        
+        while (queue.isNotEmpty() && depth <= MAX_DEPTH) {
+            val node = queue.removeFirst()
+            
+            if (visited.contains(node.hashCode())) continue
+            visited.add(node.hashCode())
+            
+            val nodeText = node.text?.toString()?.lowercase() ?: ""
+            val desc = node.contentDescription?.toString()?.lowercase() ?: ""
+            val target = targetText.lowercase()
+            
+            if (nodeText.contains(target) || desc.contains(target)) {
+                if (node.isClickable) {
+                    return node.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                }
+            }
+            
+            // Add children to queue
+            for (i in 0 until node.childCount) {
+                node.getChild(i)?.let { child ->
+                    queue.add(child)
+                }
+            }
+            
+            // Track depth (approximate based on queue size)
+            if (queue.isEmpty()) depth++
+        }
+        return false
     }
     
     private fun findAndClick(node: AccessibilityNodeInfo, targetText: String): Boolean {
@@ -192,19 +301,21 @@ class ScreenReaderAccessibilityService : AccessibilityService() {
     /** Set text in focused EditText */
     fun setText(text: String): Boolean {
         val root = rootInActiveWindow ?: return false
-        return findAndSetText(root, text)
+        return findAndSetText(root, text, 0)
     }
     
-    private fun findAndSetText(node: AccessibilityNodeInfo, text: String): Boolean {
+    private fun findAndSetText(node: AccessibilityNodeInfo, text: String, depth: Int): Boolean {
+        if (depth > MAX_DEPTH) return false
+        
         if (node.isEditable && node.isFocused) {
-            return node.performAction(AccessibilityNodeInfo.ACTION_SET_SELECTION) // focus
-                && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O
-                && node.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, Bundle().apply { putCharSequence("ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE", text) })
+            return node.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, android.os.Bundle().apply { 
+                putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text) 
+            })
         }
         
         for (i in 0 until node.childCount) {
             node.getChild(i)?.let { child ->
-                if (findAndSetText(child, text)) return true
+                if (findAndSetText(child, text, depth + 1)) return true
             }
         }
         return false
@@ -213,14 +324,16 @@ class ScreenReaderAccessibilityService : AccessibilityService() {
     /** Scroll in direction */
     fun scroll(direction: Int): Boolean {
         val root = rootInActiveWindow ?: return false
-        return findAndScroll(root, direction)
+        return findAndScroll(root, direction, 0)
     }
     
-    private fun findAndScroll(node: AccessibilityNodeInfo, direction: Int): Boolean {
+    private fun findAndScroll(node: AccessibilityNodeInfo, direction: Int, depth: Int): Boolean {
+        if (depth > MAX_DEPTH) return false
+        
         if (node.isScrollable) {
             val action = when (direction) {
-                1 -> AccessibilityNodeInfo.ACTION_SCROLL_FORWARD  // down
-                -1 -> AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD // up
+                1 -> AccessibilityNodeInfo.ACTION_SCROLL_FORWARD
+                -1 -> AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD
                 else -> return false
             }
             return node.performAction(action)
@@ -228,22 +341,14 @@ class ScreenReaderAccessibilityService : AccessibilityService() {
         
         for (i in 0 until node.childCount) {
             node.getChild(i)?.let { child ->
-                if (findAndScroll(child, direction)) return true
+                if (findAndScroll(child, direction, depth + 1)) return true
             }
         }
         return false
     }
-    
-    /** Get latest screen content */
-    companion object {
-        fun getLatestContent(): ScreenContent? = contentQueue.peekLast() ?: contentQueue.poll()
-        fun getAllContent(): List<ScreenContent> = contentQueue.toList()
-    }
 }
 
-// ===== DATA CLASSES =====
-
-@kotlinx.serialization.Serializable
+@Serializable
 data class ScreenContent(
     val packageName: String,
     val fullText: String,
@@ -253,22 +358,22 @@ data class ScreenContent(
     val eventType: Int
 )
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class ClickableElement(
     val className: String,
     val text: String,
     val contentDescription: String,
-    val bounds: android.graphics.Rect,
+    @Contextual val bounds: android.graphics.Rect,
     val clickable: Boolean,
     val longClickable: Boolean,
     val enabled: Boolean
 )
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class EditTextElement(
     val className: String,
     val hint: String,
     val text: String,
-    val bounds: android.graphics.Rect,
+    @Contextual val bounds: android.graphics.Rect,
     val focused: Boolean
 )

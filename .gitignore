@@ -1,12 +1,15 @@
 # Android
 /.Android/
 /app/build/
+/android-app/app/build/
 /.buildozer/
 /local.properties
 
-# Keystore files
+# Keystore files & signing config
 /*.jks
 /*.keystore
+/signing.properties
+/signingConfig/
 
 # External native build folder generated in Android Studio 
 **/libs/**/OBJDUMP
@@ -18,7 +21,6 @@
 
 # Build IDs
 **/build_id*
-
 **/*.apk.pre-keystores/
 *.apk.bak
 
@@ -26,11 +28,15 @@
 //for
 /.env
 /.env.production
+/*.env
+/.env.*
 /fastlane
 /output.json
 
 # Gradle
 **/gradle.properties
+/.gradle/
+/gradle/wrapper/gradle-wrapper.jar
 
 # NDK
 /**/*.so
@@ -47,6 +53,10 @@
 *.iml
 *.ipr
 out/
+captures/
+
+# VS Code
+.vscode/
 
 # Obsidian
 .vault/
@@ -57,5 +67,19 @@ out/
 ._*
 .Spotlight-V100
 .Trashes
-ehthumbs.db
-Thumbs.db
+.ehthumbs.db
+.Thumbs.db
+
+# APK files (for direct distribution, use releases)
+*.apk
+*.aab
+
+# API Keys / Secrets (check code for hardcoded keys)
+*credentials*
+*secret*
+*apikey*
+*apiKey*
+*.p12
+*.pem
+id_rsa*
+*.ppk

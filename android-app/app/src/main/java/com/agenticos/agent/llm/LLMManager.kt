@@ -5,6 +5,9 @@ import com.agenticos.agent.models.LLMResponse
 import com.agenticos.agent.models.ToolCall
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 
 interface LLMManager {
     suspend fun infer(prompt: String): LLMResponse
@@ -12,122 +15,166 @@ interface LLMManager {
     fun getModelInfo(): String
 }
 
+// Helper to convert Map to JsonObject
+private fun mapOfToJson(map: Map<String, Any>): JsonObject {
+    val jsonMap = mutableMapOf<String, kotlinx.serialization.json.JsonElement>()
+    map.forEach { (k, v) ->
+        jsonMap[k] = when (v) {
+            is String -> JsonPrimitive(v)
+            is Number -> JsonPrimitive(v)
+            is Boolean -> JsonPrimitive(v)
+            is Map<*, *> -> JsonObject(v.entries.filterIsInstance<Map.Entry<String, Any>>().associate {
+                it.key to JsonPrimitive(it.value.toString())
+            } as Map<String, kotlinx.serialization.json.JsonElement>)
+            else -> JsonPrimitive(v.toString())
+        }
+    }
+    return JsonObject(jsonMap)
+}
+
+private fun jsonObjectOf(vararg pairs: Pair<String, Any>): JsonObject {
+    val map = pairs.map { (k, v) ->
+        k to when (v) {
+            is String -> JsonPrimitive(v)
+            is Number -> JsonPrimitive(v)
+            is Boolean -> JsonPrimitive(v)
+            is JsonObject -> v
+            else -> JsonPrimitive(v.toString())
+        }
+    }.toMap()
+    return JsonObject(map)
+}
+
 // ===== RULE-BASED FALLBACK (For Prototype) =====
 class RuleBasedLLMManager : LLMManager {
     override suspend fun infer(prompt: String): LLMResponse = withContext(Dispatchers.IO) {
         inferWithContext(prompt, emptyMap())
     }
-
+    
     override suspend fun inferWithContext(prompt: String, context: Map<String, Any>): LLMResponse = withContext(Dispatchers.IO) {
         val lower = prompt.lowercase()
         
-        // Open app
-        if (lower.contains("open") || lower.contains("launch")) {
+        // FIX #6: Intent disambiguation with priority ordering
+        // Check for more specific patterns first, then fall back to general patterns
+        // This prevents collision on multi-intent phrases like "text me weather news"
+        
+        // Web search / news / weather (check FIRST for multi-intent disambiguation)
+        if (containsAny(lower, listOf("weather", "news", "sports", "stock", "exchange rate", "exchange rate"))) {
+            return@withContext LLMResponse(
+                tool = "web_search",
+                params = jsonObjectOf("query" to prompt, "num_results" to 5),
+                speak = "Searching for that...",
+                needsInternet = true
+            )
+        }
+        
+        // Open app - check early
+        if (containsVerb(lower, "open", "launch", "start")) {
             val appName = extractAppName(lower)
             return@withContext LLMResponse(
                 tool = "open_app",
-                params = mapOf("package_name" to resolvePackage(appName)),
+                params = jsonObjectOf("package_name" to resolvePackage(appName)),
                 speak = "Opening $appName",
                 needsInternet = false
             )
         }
         
-        // Send SMS
-        if (lower.contains("text") || lower.contains("sms") || lower.contains("message")) {
+        // Send SMS - IMPORTANT: Check for "text" but NOT when followed by content keywords
+        // This fixes the collision: "text me weather news" should search, not SMS
+        if (containsWord(lower, "text") || containsWord(lower, "sms") || containsWord(lower, "message")) {
+            // Disambiguation: If text is followed by news/weather/content keywords = search
+            if (containsAny(lower, listOf("weather", "news", "sports", "sports news", "latest", "today", "tomorrow"))) {
+                return@withContext LLMResponse(
+                    tool = "web_search",
+                    params = jsonObjectOf("query" to prompt, "num_results" to 5),
+                    speak = "Searching for that...",
+                    needsInternet = true
+                )
+            }
+            // Ask clarification for SMS
             return@withContext LLMResponse(
                 tool = "send_sms",
-                params = mapOf("phone_number" to "", "message" to ""),
+                params = jsonObjectOf("phone_number" to "", "message" to ""),
                 speak = "Who should I text and what should I say?",
                 needsInternet = false
             )
         }
         
-        // Make call
-        if (lower.contains("call") && !lower.contains("callback")) {
+        // Make call - check before generic "call" phrases
+        if (containsWord(lower, "call") && !containsAny(lower, listOf("callback", "call back", "call me back"))) {
             return@withContext LLMResponse(
                 tool = "make_call",
-                params = mapOf("phone_number" to ""),
+                params = jsonObjectOf("phone_number" to ""),
                 speak = "Who should I call?",
                 needsInternet = false
             )
         }
         
-        // Set alarm
-        if (lower.contains("alarm") || lower.contains("wake me")) {
+        // Set alarm - check for time-specific context
+        if (containsAny(lower, listOf("alarm", "wake me", "reminder")) && containsTime(lower)) {
             val time = extractTime(lower)
             return@withContext LLMResponse(
                 tool = "set_alarm",
-                params = mapOf("time" to time),
+                params = jsonObjectOf("time" to time),
                 speak = "Alarm set for $time",
                 needsInternet = false
             )
         }
         
         // Play media
-        if (lower.contains("play") || lower.contains("music") || lower.contains("song")) {
+        if (containsVerb(lower, "play", "music", "song")) {
             val query = extractMediaQuery(lower)
             return@withContext LLMResponse(
                 tool = "play_media",
-                params = mapOf("query" to query, "source" to "youtube"),
+                params = jsonObjectOf("query" to query, "source" to "youtube"),
                 speak = "Playing $query on YouTube",
                 needsInternet = false
             )
         }
         
-        // Toggle WiFi
-        if (lower.contains("wifi") || lower.contains("wi-fi")) {
-            val enabled = lower.contains("on") || lower.contains("enable") || lower.contains("turn on")
+        // Toggle WiFi - check for explicit on/off context
+        if (containsWord(lower, "wifi") || containsWord(lower, "wi-fi")) {
+            val enabled = containsAny(lower, listOf("on", "enable", "turn on", "connect", "connected"))
             return@withContext LLMResponse(
                 tool = "toggle_wifi",
-                params = mapOf("enabled" to enabled),
+                params = jsonObjectOf("enabled" to enabled.toString()),
                 speak = "Turning WiFi ${if (enabled) "on" else "off"}",
                 needsInternet = false
             )
         }
         
         // Toggle Bluetooth
-        if (lower.contains("bluetooth")) {
-            val enabled = lower.contains("on") || lower.contains("enable") || lower.contains("turn on")
+        if (containsWord(lower, "bluetooth")) {
+            val enabled = containsAny(lower, listOf("on", "enable", "turn on"))
             return@withContext LLMResponse(
                 tool = "toggle_bluetooth",
-                params = mapOf("enabled" to enabled),
+                params = jsonObjectOf("enabled" to enabled.toString()),
                 speak = "Turning Bluetooth ${if (enabled) "on" else "off"}",
                 needsInternet = false
             )
         }
         
-        // Set ringer mode
-        if (lower.contains("silent") || lower.contains("vibrate") || lower.contains("ringer")) {
+        // Set ringer mode - check for silent/vibrate first
+        if (containsWord(lower, "silent") || containsWord(lower, "vibrate") || containsWord(lower, "ringer")) {
             val mode = when {
-                lower.contains("silent") -> "silent"
-                lower.contains("vibrate") -> "vibrate"
+                containsWord(lower, "silent") -> "silent"
+                containsWord(lower, "vibrate") -> "vibrate"
                 else -> "normal"
             }
             return@withContext LLMResponse(
                 tool = "set_ringer_mode",
-                params = mapOf("mode" to mode),
+                params = jsonObjectOf("mode" to mode),
                 speak = "Setting ringer to $mode",
                 needsInternet = false
             )
         }
         
-        // Web search / news / weather
-        if (lower.contains("news") || lower.contains("weather") || lower.contains("search") 
-            || lower.contains("who is") || lower.contains("what is") || lower.contains("how to")) {
-            return@withContext LLMResponse(
-                tool = "web_search",
-                params = mapOf("query" to prompt, "num_results" to 5),
-                speak = "Searching for that...",
-                needsInternet = true
-            )
-        }
-        
         // Summarize URL
-        if (lower.contains("summarize") && prompt.contains("http")) {
+        if (containsWord(lower, "summarize") && prompt.contains("http")) {
             val url = extractUrl(prompt)
             return@withContext LLMResponse(
                 tool = "summarize_url",
-                params = mapOf("url" to url, "max_length" to 200),
+                params = jsonObjectOf("url" to url, "max_length" to 200),
                 speak = "Summarizing that page...",
                 needsInternet = true
             )
@@ -142,12 +189,42 @@ class RuleBasedLLMManager : LLMManager {
         )
     }
     
+    // Helper function to check word boundaries (avoids "text" matching "textbook")
+    private fun containsWord(text: String, word: String): Boolean {
+        val pattern = "\\b${Regex.escape(word)}\\b".toRegex(RegexOption.IGNORE_CASE)
+        return pattern.containsMatchIn(text)
+    }
+    
+    // Helper function to check if text contains any of the keywords
+    private fun containsAny(text: String, keywords: List<String>): Boolean {
+        return keywords.any { keyword ->
+            text.contains(keyword.lowercase())
+        }
+    }
+    
+    // Helper function to check for action verbs
+    private fun containsVerb(text: String, vararg verbs: String): Boolean {
+        return verbs.any { verb ->
+            // Match "X" or "please X" or "can you X" patterns
+            val pattern = "(?:please|can you|can\\'t you)\\s+(${verbs.joinToString("|")})".toRegex(RegexOption.IGNORE_CASE)
+            pattern.containsMatchIn(text) || text.contains(verb.lowercase())
+        }
+    }
+    
+    // Check if text contains time references
+    private fun containsTime(text: String): Boolean {
+        val timeRegex = "\\b(\\d{1,2}):(\\d{2})\\b".toRegex()
+        val ampmRegex = "\\b(\\d{1,2})\\s*(am|pm)\\b".toRegex()
+        return timeRegex.containsMatchIn(text) || ampmRegex.containsMatchIn(text)
+    }
+    
     private fun extractAppName(input: String): String {
-        val keywords = listOf("open ", "launch ", "start ")
+        val keywords = listOf("open ", "launch ", "start ", "play ", "music on ", "play music on ")
         for (kw in keywords) {
             val idx = input.indexOf(kw)
             if (idx >= 0) {
                 val after = input.substring(idx + kw.length).trim()
+                // Handle "youtube music" case
                 val end = after.indexOf(" ")
                 return if (end > 0) after.substring(0, end) else after
             }
@@ -200,7 +277,7 @@ class RuleBasedLLMManager : LLMManager {
     }
     
     private fun extractMediaQuery(input: String): String {
-        val keywords = listOf("play ", "music ", "song ")
+        val keywords = listOf("play ", "music ", "song ", "music on ", "play music on ")
         for (kw in keywords) {
             val idx = input.indexOf(kw)
             if (idx >= 0) {
@@ -212,10 +289,10 @@ class RuleBasedLLMManager : LLMManager {
     
     private fun extractUrl(input: String): String {
         val urlRegex = "https?://[^\\s]+".toRegex()
-        return urlRegex.find(input)?.value ?: "https://google.com"
+        return urlRegex.find(input)?.value ?: ""
     }
 
-    override fun getModelInfo(): String = "Rule-Based LLM (Prototype)"
+    override fun getModelInfo(): String = "Rule-Based LLM (Prototype with intent disambiguation)"
 }
 
 // ===== MEDIAPIPE LLM MANAGER (Production) =====
@@ -275,5 +352,4 @@ class MediaPipeLLMManager(private val context: Context) : LLMManager {
     }
     
     override fun getModelInfo(): String = "MediaPipe LLM (On-device)"
-}
-*/
+}*/

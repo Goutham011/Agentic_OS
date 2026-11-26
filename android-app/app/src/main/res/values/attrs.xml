@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material3 color attributes -->
+    <attr format="color" name="colorPrimary"/>
+    <attr format="color" name="colorOnPrimary"/>
+    <attr format="color" name="colorPrimaryContainer"/>
+    <attr format="color" name="colorOnPrimaryContainer"/>
+    <attr format="color" name="colorPrimaryVariant"/>
+    <attr format="color" name="colorOnPrimaryVariant"/>
+    <attr format="color" name="colorOnPrimarySurface"/>
+    <attr format="color" name="colorOnPrimaryFixed"/>
+    <attr format="color" name="colorOnPrimaryFixedVariant"/>
+    
+    <attr format="color" name="colorSecondary"/>
+    <attr format="color" name="colorOnSecondary"/>
+    <attr format="color" name="colorSecondaryContainer"/>
+    <attr format="color" name="colorOnSecondaryContainer"/>
+    <attr format="color" name="colorSecondaryVariant"/>
+    <attr format="color" name="colorOnSecondaryVariant"/>
+    <attr format="color" name="colorOnSecondarySurface"/>
+    <attr format="color" name="colorOnSecondaryFixed"/>
+    <attr format="color" name="colorOnSecondaryFixedVariant"/>
+    
+    <attr format="color" name="colorTertiary"/>
+    <attr format="color" name="colorOnTertiary"/>
+    <attr format="color" name="colorTertiaryContainer"/>
+    <attr format="color" name="colorOnTertiaryContainer"/>
+    <attr format="color" name="colorTertiaryVariant"/>
+    <attr format="color" name="colorOnTertiaryVariant"/>
+    <attr format="color" name="colorOnTertiarySurface"/>
+    <attr format="color" name="colorOnTertiaryFixed"/>
+    <attr format="color" name="colorOnTertiaryFixedVariant"/>
+    
+    <attr format="color" name="colorError"/>
+    <attr format="color" name="colorOnError"/>
+    <attr format="color" name="colorErrorContainer"/>
+    <attr format="color" name="colorOnErrorContainer"/>
+    <attr format="color" name="colorOnErrorSurface"/>
+    <attr format="color" name="colorErrorOnSurface"/>
+    <attr format="color" name="colorOnErrorContainerSurface"/>
+    
+    <attr format="color" name="colorBackground"/>
+    <attr format="color" name="colorOnBackground"/>
+    <attr format="color" name="colorSurface"/>
+    <attr format="color" name="colorOnSurface"/>
+    <attr format="color" name="colorSurfaceVariant"/>
+    <attr format="color" name="colorOnSurfaceVariant"/>
+    <attr format="color" name="colorSurfaceBright"/>
+    <attr format="color" name="colorSurfaceDim"/>
+    <attr format="color" name="colorSurfaceContainer"/>
+    <attr format="color" name="colorSurfaceContainerHigh"/>
+    <attr format="color" name="colorSurfaceContainerHighest"/>
+    <attr format="color" name="colorSurfaceContainerLow"/>
+    <attr format="color" name="colorSurfaceContainerLowest"/>
+    <attr format="color" name="colorSurfaceInverse"/>
+    <attr format="color" name="colorOnSurfaceInverse"/>
+    <attr format="color" name="colorInversePrimary"/>
+    
+    <attr format="color" name="colorOutline"/>
+    <attr format="color" name="colorOutlineVariant"/>
+</resources>

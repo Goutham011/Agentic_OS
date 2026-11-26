@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.agenticos.agent">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- ===== RUNTIME PERMISSIONS ===== -->
     <uses-permission android:name="android.permission.SEND_SMS" />
@@ -18,7 +17,6 @@
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MANIFEST" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
@@ -77,7 +75,7 @@
         <service
             android:name=".AgentForegroundService"
             android:exported="false"
-            android:foregroundServiceType="manifest|microphone|location|dataSync"
+            android:foregroundServiceType="microphone|location|dataSync"
             android:permission="android.permission.BIND_FOREGROUND_SERVICE" />
 
         <!-- ===== ACCESSIBILITY SERVICE ===== -->

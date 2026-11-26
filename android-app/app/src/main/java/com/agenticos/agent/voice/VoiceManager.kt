@@ -1,6 +1,7 @@
 package com.agenticos.agent.voice
 
 import android.content.Context
+import android.content.Intent
 import android.media.AudioManager
 import android.os.Build
 import android.speech.RecognitionListener
@@ -43,8 +44,8 @@ class VoiceManager(private val context: Context) {
                     tts?.setLanguage(Locale.US)
                 }
                 // Set speech rate and pitch
-                tts?.speechRate = 1.0f
-                tts?.pitch = 1.0f
+                tts?.setSpeechRate(1.0f)
+                tts?.setPitch(1.0f)
             }
         }
         
@@ -164,12 +165,12 @@ class VoiceManager(private val context: Context) {
     
     /** Set speech rate (0.5 - 2.0) */
     fun setSpeechRate(rate: Float) {
-        tts?.speechRate = rate.coerceIn(0.5f, 2.0f)
+        tts?.setSpeechRate(rate.coerceIn(0.5f, 2.0f))
     }
     
     /** Set pitch (0.5 - 2.0) */
     fun setPitch(pitch: Float) {
-        tts?.pitch = pitch.coerceIn(0.5f, 2.0f)
+        tts?.setPitch(pitch.coerceIn(0.5f, 2.0f))
     }
     
     /** Shutdown */
