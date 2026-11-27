@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Only allow access to app-specific cache directory -->
     <cache-path name="cache" path="." />
+    <!-- Only allow access to app-specific files directory -->
     <files-path name="files" path="." />
-    <external-path name="external" path="." />
-    <external-files-path name="external_files" path="." />
-    <external-cache-path name="external_cache" path="." />
 </paths>

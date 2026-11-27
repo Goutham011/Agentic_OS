@@ -2,8 +2,8 @@
     <string name="app_name">Agentic OS</string>
     
     <!-- Accessibility Service -->
-    <string name="accessibility_service_name">Agentic OS Screen Reader</string>
-    <string name="accessibility_service_description">Reads screen content and performs UI actions for the Agentic OS assistant. Allows the assistant to open apps, type messages, and automate tasks.</string>
+    <string name="accessibility_service_name">Agentic OS Assistant</string>
+    <string name="accessibility_service_description">Personal assistant for accessibility and automation. Reads screen content to help control your phone hands-free for people with mobility or visual impairments.</string>
     
     <!-- Permissions Rationale -->
     <string name="perm_rationale_sms">Needed to send and read SMS messages for auto-reply and messaging commands.</string>
@@ -16,14 +16,14 @@
     <string name="perm_rationale_calendar">Needed to read calendar events for scheduling.</string>
     <string name="perm_rationale_exact_alarm">Needed for precise alarm timing.</string>
     <string name="perm_rationale_media">Needed to read media files and control playback.</string>
-    <string name="perm_rationale_accessibility">Enable in Settings &#8594; Accessibility &#8594; Agentic OS Screen Reader. Allows the assistant to read your screen and tap buttons.</string>
-    <string name="perm_rationale_notification_listener">Enable in Settings &#8594; Notifications &#8594; Notification Access &#8594; Agentic OS. Allows auto-reply to missed calls and reading notifications.</string>
-    <string name="perm_rationale_usage_stats">Enable in Settings &#8594; Digital Wellbeing &#8594; Usage Access &#8594; Agentic OS. Allows learning your patterns for smart automations.</string>
-    <string name="perm_rationale_overlay">Enable in Settings &#8594; Apps &#8594; Special Access &#8594; Display over other apps &#8594; Agentic OS. Allows floating microphone button.</string>
+    <string name="perm_rationale_accessibility">Enable in Settings → Accessibility → Agentic OS Assistant. Allows the assistant to read your screen and help with automation for accessibility purposes.</string>
+    <string name="perm_rationale_notification_listener">Enable in Settings → Notifications → Notification Access → Agentic OS. Allows reading notifications for automation.</string>
+    <string name="perm_rationale_usage_stats">Enable in Settings → Digital Wellbeing → Usage Access → Agentic OS. Helps with smart automations.</string>
+    <string name="perm_rationale_overlay">Enable in Settings → Apps → Special Access → Display over other apps → Agentic OS. Shows the floating assistant button.</string>
     
     <!-- UI Strings -->
     <string name="onboarding_welcome_title">Welcome to Agentic OS</string>
-    <string name="onboarding_welcome_desc">Your personal phone assistant that runs entirely on-device. No cloud required for core features.</string>
+    <string name="onboarding_welcome_desc">Your personal phone assistant for accessibility and automation. Helps control your phone hands-free.</string>
     <string name="onboarding_comm_title">Communication</string>
     <string name="onboarding_comm_desc">Send texts, make calls, read messages, and auto-reply to missed calls.</string>
     <string name="onboarding_location_title">Location Triggers</string>
@@ -33,7 +33,7 @@
     <string name="onboarding_system_title">System Control</string>
     <string name="onboarding_system_desc">Set alarms, toggle WiFi/Bluetooth, get notifications, and use voice commands.</string>
     <string name="onboarding_special_title">Special Access</string>
-    <string name="onboarding_special_desc">Required for screen reading, auto-reply, and notification monitoring.</string>
+    <string name="onboarding_special_desc">Required for screen reading, auto-reply, and notification monitoring for accessibility assistance.</string>
     <string name="onboarding_ready_title">All Set</string>
     <string name="onboarding_ready_desc">Agentic OS is ready. Tap the mic button or say &quot;Hey Agent&quot; to start.</string>
     

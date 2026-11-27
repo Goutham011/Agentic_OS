@@ -1,0 +1,33 @@
+version: 1
+language: kotlin
+project_type: android
+
+reviews:
+  profile: assertive
+  auto_review: false
+  deep_scan: true
+  ai_enhancement: true
+  optimization_suggestions: true
+  unused_analysis: true
+  quality_score: true
+
+tools:
+  semgrep: true
+  custom_scanner: true
+
+knowledge_base:
+  guidelines: docs/coding-standards.md
+
+analysis_config:
+  ai_suggestions: true
+  optimization_level: deep
+  quality_threshold: 85
+  ai_slop_detection: true
+  unused_analysis: true
+  code_reduction: true
+  reuse_opportunities: true
+
+project_specific:
+  max_line_reduction: 15%
+  duplicate_threshold: 0.3
+  complexity_threshold: 10

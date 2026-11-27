@@ -1,0 +1,162 @@
+[
+  {
+    "rule_id": "build.gradle_critical_0",
+    "name": "Hardcoded keystore password",
+    "message": "Hardcoded keystore password in build.gradle.kts",
+    "severity": "CRITICAL",
+    "file": "/Users/gouthamsai/opencode_1/Agentic_OS/android-app/app/build.gradle.kts",
+    "line": 30,
+    "column": 0,
+    "fix": "Use env vars or gradle.properties: `storePassword = System.getenv(\"KEYSTORE_PASSWORD\")`"
+  },
+  {
+    "rule_id": "build.gradle_critical_1",
+    "name": "Hardcoded keystore key password",
+    "message": "Hardcoded keystore key password in build.gradle.kts",
+    "severity": "CRITICAL",
+    "file": "/Users/gouthamsai/opencode_1/Agentic_OS/android-app/app/build.gradle.kts",
+    "line": 32,
+    "column": 0,
+    "fix": "Use env vars: `keyPassword = System.getenv(\"KEY_PASSWORD\")`"
+  },
+  {
+    "rule_id": "Database_high_0",
+    "name": "Hardcoded database passphrase",
+    "message": "Hardcoded database passphrase in Database.kt",
+    "severity": "HIGH",
+    "file": "/Users/gouthamsai/opencode_1/Agentic_OS/android-app/app/src/main/java/com/agenticos/agent/data/Database.kt",
+    "line": 34,
+    "column": 0,
+    "fix": "Use environment variables or encrypted storage"
+  },
+  {
+    "rule_id": "build.gradle_high_2",
+    "name": "Hardcoded password",
+    "message": "Hardcoded password in build.gradle.kts",
+    "severity": "HIGH",
+    "file": "/Users/gouthamsai/opencode_1/Agentic_OS/android-app/app/build.gradle.kts",
+    "line": 30,
+    "column": 0,
+    "fix": "Use environment variables: `password = os.getenv(\"DB_PASSWORD\")`"
+  },
+  {
+    "rule_id": "build.gradle_high_3",
+    "name": "Hardcoded password",
+    "message": "Hardcoded password in build.gradle.kts",
+    "severity": "HIGH",
+    "file": "/Users/gouthamsai/opencode_1/Agentic_OS/android-app/app/build.gradle.kts",
+    "line": 32,
+    "column": 0,
+    "fix": "Use environment variables: `password = os.getenv(\"DB_PASSWORD\")`"
+  },
+  {
+    "rule_id": "ScreenReaderAccessibilityService_medium_0",
+    "name": "Overly verbose variable name",
+    "message": "Overly verbose variable name in ScreenReaderAccessibilityService.kt",
+    "severity": "MEDIUM",
+    "file": "/Users/gouthamsai/opencode_1/Agentic_OS/android-app/app/src/main/java/com/agenticos/agent/accessibility/ScreenReaderAccessibilityService.kt",
+    "line": 17,
+    "column": 0,
+    "fix": "Rename to shorter, meaningful name (max 20 chars) e.g., `userDatabase` instead of `userDatabaseDataSource`"
+  },
+  {
+    "rule_id": "NotificationListenerServiceImpl_medium_1",
+    "name": "Overly verbose variable name",
+    "message": "Overly verbose variable name in NotificationListenerServiceImpl.kt",
+    "severity": "MEDIUM",
+    "file": "/Users/gouthamsai/opencode_1/Agentic_OS/android-app/app/src/main/java/com/agenticos/agent/accessibility/NotificationListenerServiceImpl.kt",
+    "line": 11,
+    "column": 0,
+    "fix": "Rename to shorter, meaningful name (max 20 chars) e.g., `userDatabase` instead of `userDatabaseDataSource`"
+  },
+  {
+    "rule_id": "VoiceManager_low_0",
+    "name": "Redundant comment - code is self-explanatory",
+    "message": "Redundant comment - code is self-explanatory in VoiceManager.kt",
+    "severity": "LOW",
+    "file": "/Users/gouthamsai/opencode_1/Agentic_OS/android-app/app/src/main/java/com/agenticos/agent/voice/VoiceManager.kt",
+    "line": 142,
+    "column": 0,
+    "fix": "Remove: method names should be self-documenting"
+  },
+  {
+    "rule_id": "AgentForegroundService_low_0",
+    "name": "Magic number detected - use named constant",
+    "message": "Magic number detected - use named constant in AgentForegroundService.kt",
+    "severity": "LOW",
+    "file": "/Users/gouthamsai/opencode_1/Agentic_OS/android-app/app/src/main/java/com/agenticos/agent/service/AgentForegroundService.kt",
+    "line": 47,
+    "column": 0,
+    "fix": "Replace with named constant: `val MAX_RETRIES = 3`"
+  },
+  {
+    "rule_id": "ScreenReaderAccessibilityService_low_1",
+    "name": "Magic number detected - use named constant",
+    "message": "Magic number detected - use named constant in ScreenReaderAccessibilityService.kt",
+    "severity": "LOW",
+    "file": "/Users/gouthamsai/opencode_1/Agentic_OS/android-app/app/src/main/java/com/agenticos/agent/accessibility/ScreenReaderAccessibilityService.kt",
+    "line": 233,
+    "column": 0,
+    "fix": "Replace with named constant: `val MAX_RETRIES = 3`"
+  },
+  {
+    "rule_id": "MainActivity_info_0",
+    "name": "Overly verbose comment - consider shorter, meaningful comments",
+    "message": "Overly verbose comment - consider shorter, meaningful comments in MainActivity.kt",
+    "severity": "INFO",
+    "file": "/Users/gouthamsai/opencode_1/Agentic_OS/android-app/app/src/main/java/com/agenticos/agent/MainActivity.kt",
+    "line": 253,
+    "column": 0,
+    "fix": "Remove redundant explanation. Code should be self-documenting."
+  },
+  {
+    "rule_id": "MainActivity_info_1",
+    "name": "Overly verbose comment - consider shorter, meaningful comments",
+    "message": "Overly verbose comment - consider shorter, meaningful comments in MainActivity.kt",
+    "severity": "INFO",
+    "file": "/Users/gouthamsai/opencode_1/Agentic_OS/android-app/app/src/main/java/com/agenticos/agent/MainActivity.kt",
+    "line": 255,
+    "column": 0,
+    "fix": "Remove redundant explanation. Code should be self-documenting."
+  },
+  {
+    "rule_id": "Tools_info_0",
+    "name": "Overly verbose comment - consider shorter, meaningful comments",
+    "message": "Overly verbose comment - consider shorter, meaningful comments in Tools.kt",
+    "severity": "INFO",
+    "file": "/Users/gouthamsai/opencode_1/Agentic_OS/android-app/app/src/main/java/com/agenticos/agent/tools/Tools.kt",
+    "line": 243,
+    "column": 0,
+    "fix": "Remove redundant explanation. Code should be self-documenting."
+  },
+  {
+    "rule_id": "LLMManager_info_0",
+    "name": "Overly verbose comment - consider shorter, meaningful comments",
+    "message": "Overly verbose comment - consider shorter, meaningful comments in LLMManager.kt",
+    "severity": "INFO",
+    "file": "/Users/gouthamsai/opencode_1/Agentic_OS/android-app/app/src/main/java/com/agenticos/agent/llm/LLMManager.kt",
+    "line": 198,
+    "column": 0,
+    "fix": "Remove redundant explanation. Code should be self-documenting."
+  },
+  {
+    "rule_id": "AutomationCheckWorker_info_0",
+    "name": "Overly verbose comment - consider shorter, meaningful comments",
+    "message": "Overly verbose comment - consider shorter, meaningful comments in AutomationCheckWorker.kt",
+    "severity": "INFO",
+    "file": "/Users/gouthamsai/opencode_1/Agentic_OS/android-app/app/src/main/java/com/agenticos/agent/automation/AutomationCheckWorker.kt",
+    "line": 35,
+    "column": 0,
+    "fix": "Remove redundant explanation. Code should be self-documenting."
+  },
+  {
+    "rule_id": "NotificationListenerServiceImpl_info_0",
+    "name": "Overly verbose comment - consider shorter, meaningful comments",
+    "message": "Overly verbose comment - consider shorter, meaningful comments in NotificationListenerServiceImpl.kt",
+    "severity": "INFO",
+    "file": "/Users/gouthamsai/opencode_1/Agentic_OS/android-app/app/src/main/java/com/agenticos/agent/accessibility/NotificationListenerServiceImpl.kt",
+    "line": 36,
+    "column": 0,
+    "fix": "Remove redundant explanation. Code should be self-documenting."
+  }
+]

@@ -1,0 +1,6 @@
+#!/bin/bash
+# Force disable daemon by using a temp home
+export GRADLE_USER_HOME="/tmp/gradle_$$"
+mkdir -p "$GRADLE_USER_HOME"
+export GRADLE_ARGS="--no-daemon -Dorg.gradle.daemon=false -Dorg.gradle.parallel=false"
+exec /Users/gouthamsai/.gradle/wrapper/dists/gradle-8.6-bin/afr5mpiioh2wthjmwnkmdsd5w/gradle-8.6/bin/gradle "$@"

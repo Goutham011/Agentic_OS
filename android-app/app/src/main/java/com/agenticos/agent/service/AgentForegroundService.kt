@@ -44,7 +44,7 @@ class AgentForegroundService : Service() {
     companion object {
         private const val TAG = "AgentForegroundService"
         const val CHANNEL_ID = "agentic_os_channel"
-        const val NOTIFICATION_ID = 1001
+        private const val DEFAULT_NOTIFICATION_ID = 1001
         const val ACTION_START_LISTENING = "com.agenticos.agent.START_LISTENING"
         const val ACTION_STOP_LISTENING = "com.agenticos.agent.STOP_LISTENING"
         const val ACTION_TOGGLE_HOTWORD = "com.agenticos.agent.TOGGLE_HOTWORD"
@@ -81,7 +81,7 @@ class AgentForegroundService : Service() {
     // State - using AtomicBoolean for thread safety across coroutines
     private val isListening = AtomicBoolean(false)
     private val hotwordEnabled = AtomicBoolean(false)
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val commandChannel = kotlinx.coroutines.channels.Channel<String>(capacity = 10)
     
     override fun onCreate() {
@@ -117,13 +117,13 @@ class AgentForegroundService : Service() {
         // Start foreground with notification
         val notification = buildNotification()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            startForeground(NOTIFICATION_ID, notification, 
+            startForeground(DEFAULT_NOTIFICATION_ID, notification, 
                 FOREGROUND_SERVICE_TYPE_MICROPHONE or
                 FOREGROUND_SERVICE_TYPE_LOCATION or
                 FOREGROUND_SERVICE_TYPE_DATA_SYNC)
         } else {
             @Suppress("DEPRECATION")
-            startForeground(NOTIFICATION_ID, notification)
+            startForeground(DEFAULT_NOTIFICATION_ID, notification)
         }
         
         return START_STICKY
@@ -182,7 +182,7 @@ class AgentForegroundService : Service() {
     private fun updateNotification() {
         val notification = buildNotification()
         val manager = getSystemService(NotificationManager::class.java)
-        manager.notify(NOTIFICATION_ID, notification)
+        manager.notify(DEFAULT_NOTIFICATION_ID, notification)
     }
     
     private fun startAgentLoop() {
@@ -337,7 +337,7 @@ class AgentForegroundService : Service() {
         } else {
             // Start Porcupine wake word detection
             voiceManager.startHotwordDetection { keywordName: String ->
-                scope.launch(Dispatchers.Main) {
+                scope.launch(Dispatchers.Default) {
                     commandChannel.trySend("HOTWORD_DETECTED")
                 }
             }

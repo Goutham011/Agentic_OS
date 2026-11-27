@@ -28,6 +28,9 @@ class ScreenReaderAccessibilityService : AccessibilityService() {
         // FIX #7: Add depth limit to prevent stack overflow from unbounded recursion
         private const val MAX_DEPTH = 50
         
+        // Notification timeout in milliseconds
+        private const val NOTIFICATION_TIMEOUT_MS = 100
+        
         fun getLatestContent(): ScreenContent? = contentQueue.lastOrNull()
         fun getAllContent(): List<ScreenContent> = contentQueue.toList()
     }
@@ -230,7 +233,7 @@ class ScreenReaderAccessibilityService : AccessibilityService() {
             flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS or
                     AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or
                     AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
-            notificationTimeout = 100
+            notificationTimeout = NOTIFICATION_TIMEOUT_MS.toLong()
         }
         setServiceInfo(info)
         Log.d(TAG, "Accessibility service connected")

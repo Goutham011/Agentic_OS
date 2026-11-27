@@ -1,0 +1,122 @@
+[
+  {
+    "rule_id": "ScreenReaderAccessibilityService_medium_0",
+    "name": "Overly verbose variable name",
+    "message": "Overly verbose variable name in ScreenReaderAccessibilityService.kt",
+    "severity": "MEDIUM",
+    "file": "app/src/main/java/com/agenticos/agent/accessibility/ScreenReaderAccessibilityService.kt",
+    "line": 17,
+    "column": 0,
+    "fix": "Rename to shorter, meaningful name (max 20 chars) e.g., `userDatabase` instead of `userDatabaseDataSource`"
+  },
+  {
+    "rule_id": "NotificationListenerServiceImpl_medium_1",
+    "name": "Overly verbose variable name",
+    "message": "Overly verbose variable name in NotificationListenerServiceImpl.kt",
+    "severity": "MEDIUM",
+    "file": "app/src/main/java/com/agenticos/agent/accessibility/NotificationListenerServiceImpl.kt",
+    "line": 11,
+    "column": 0,
+    "fix": "Rename to shorter, meaningful name (max 20 chars) e.g., `userDatabase` instead of `userDatabaseDataSource`"
+  },
+  {
+    "rule_id": "AgentForegroundService_low_0",
+    "name": "Magic number detected - use named constant",
+    "message": "Magic number detected - use named constant in AgentForegroundService.kt",
+    "severity": "LOW",
+    "file": "app/src/main/java/com/agenticos/agent/service/AgentForegroundService.kt",
+    "line": 47,
+    "column": 0,
+    "fix": "Replace with named constant: `val MAX_RETRIES = 3`"
+  },
+  {
+    "rule_id": "ScreenReaderAccessibilityService_low_1",
+    "name": "Magic number detected - use named constant",
+    "message": "Magic number detected - use named constant in ScreenReaderAccessibilityService.kt",
+    "severity": "LOW",
+    "file": "app/src/main/java/com/agenticos/agent/accessibility/ScreenReaderAccessibilityService.kt",
+    "line": 32,
+    "column": 0,
+    "fix": "Replace with named constant: `val MAX_RETRIES = 3`"
+  },
+  {
+    "rule_id": "Database_low_0",
+    "name": "Redundant comment - code is self-explanatory",
+    "message": "Redundant comment - code is self-explanatory in Database.kt",
+    "severity": "LOW",
+    "file": "app/src/main/java/com/agenticos/agent/data/Database.kt",
+    "line": 49,
+    "column": 0,
+    "fix": "Remove: method names should be self-documenting"
+  },
+  {
+    "rule_id": "MainActivity_info_0",
+    "name": "Overly verbose comment - consider shorter, meaningful comments",
+    "message": "Overly verbose comment - consider shorter, meaningful comments in MainActivity.kt",
+    "severity": "INFO",
+    "file": "app/src/main/java/com/agenticos/agent/MainActivity.kt",
+    "line": 253,
+    "column": 0,
+    "fix": "Remove redundant explanation. Code should be self-documenting."
+  },
+  {
+    "rule_id": "MainActivity_info_1",
+    "name": "Overly verbose comment - consider shorter, meaningful comments",
+    "message": "Overly verbose comment - consider shorter, meaningful comments in MainActivity.kt",
+    "severity": "INFO",
+    "file": "app/src/main/java/com/agenticos/agent/MainActivity.kt",
+    "line": 255,
+    "column": 0,
+    "fix": "Remove redundant explanation. Code should be self-documenting."
+  },
+  {
+    "rule_id": "Tools_info_0",
+    "name": "Overly verbose comment - consider shorter, meaningful comments",
+    "message": "Overly verbose comment - consider shorter, meaningful comments in Tools.kt",
+    "severity": "INFO",
+    "file": "app/src/main/java/com/agenticos/agent/tools/Tools.kt",
+    "line": 243,
+    "column": 0,
+    "fix": "Remove redundant explanation. Code should be self-documenting."
+  },
+  {
+    "rule_id": "LLMManager_info_0",
+    "name": "Overly verbose comment - consider shorter, meaningful comments",
+    "message": "Overly verbose comment - consider shorter, meaningful comments in LLMManager.kt",
+    "severity": "INFO",
+    "file": "app/src/main/java/com/agenticos/agent/llm/LLMManager.kt",
+    "line": 198,
+    "column": 0,
+    "fix": "Remove redundant explanation. Code should be self-documenting."
+  },
+  {
+    "rule_id": "VoiceManager_info_0",
+    "name": "Overly detailed TODO comment - split into smaller issues",
+    "message": "Overly detailed TODO comment - split into smaller issues in VoiceManager.kt",
+    "severity": "INFO",
+    "file": "app/src/main/java/com/agenticos/agent/voice/VoiceManager.kt",
+    "line": 141,
+    "column": 0,
+    "fix": "Break into specific tickets. Keep TODOs under 80 chars with clear action items"
+  },
+  {
+    "rule_id": "AutomationCheckWorker_info_0",
+    "name": "Overly verbose comment - consider shorter, meaningful comments",
+    "message": "Overly verbose comment - consider shorter, meaningful comments in AutomationCheckWorker.kt",
+    "severity": "INFO",
+    "file": "app/src/main/java/com/agenticos/agent/automation/AutomationCheckWorker.kt",
+    "line": 35,
+    "column": 0,
+    "fix": "Remove redundant explanation. Code should be self-documenting."
+  },
+  {
+    "rule_id": "NotificationListenerServiceImpl_info_0",
+    "name": "Overly verbose comment - consider shorter, meaningful comments",
+    "message": "Overly verbose comment - consider shorter, meaningful comments in NotificationListenerServiceImpl.kt",
+    "severity": "INFO",
+    "file": "app/src/main/java/com/agenticos/agent/accessibility/NotificationListenerServiceImpl.kt",
+    "line": 36,
+    "column": 0,
+    "fix": "Remove redundant explanation. Code should be self-documenting."
+  }
+]

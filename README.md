@@ -137,6 +137,52 @@ Your phone should work for you, not the other way around. Agentic OS gives you a
 
 ---
 
+## Security & Privacy
+
+### 🔒 Data Protection
+- All conversations stored in SQLCipher-encrypted Room database
+- Database passphrase derived from device-specific key
+- No telemetry or analytics
+- Explicit permission requests with user education
+
+### ⚠️ Play Store Distribution
+
+**Note:** This app uses AccessibilityService for its core functionality, which triggers Google Play's automated security scanning. 
+
+**Recommended distribution channels:**
+1. **GitHub Releases** — Download APKs from Releases page
+2. **F-Droid** — Open source app store (if accepted)
+3. **Direct APK** — Side-load from website
+
+The app is designed for:
+- Users with accessibility needs
+- Privacy-conscious automation enthusiasts
+- Developers/testing purposes
+
+### 🔐 Build Security
+
+Before building a release:
+
+1. **Generate release keystore:**
+   ```bash
+   keytool -genkey -v -keystore release.keystore -alias release \
+     -keyalg RSA -keysize 2048 -validity 10000
+   ```
+
+2. **Set environment variables:**
+   ```
+   RELEASE_STORE_PASSWORD=<password>
+   RELEASE_KEY_ALIAS=release
+   RELEASE_KEY_PASSWORD=<password>
+   ```
+
+3. **Build release:**
+   ```bash
+   ./gradlew assembleRelease
+   ```
+
+---
+
 ## Development
 
 ### Prerequisites
@@ -232,7 +278,7 @@ MIT License — See [LICENSE](LICENSE) file for details.
 - [Picovoice](https://picovoice.ai/) — Porcupine wake word
 - [MediaPipe](https://developers.google.com/mediapipe) — LLM inference
 - [Room](https://developer.android.com/topic/libraries/architecture/room) — SQLCipher database
-- [Hilt](https://developer.google.com/training/dependency-injection/hilt-android) — DI framework
+- [Hilt](https://developer.android.com/training/dependency-injection/hilt-android) — DI framework
 
 <p align="center">
   <strong>Built for the "Agentic OS" vision — Your phone, truly yours.</strong><br>

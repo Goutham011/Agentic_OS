@@ -12,6 +12,7 @@ import android.speech.tts.UtteranceProgressListener
 import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
@@ -27,6 +28,9 @@ class VoiceManager(private val context: Context) {
     // TTS State
     private var ttsReady = false
     private var currentUtteranceId: String? = null
+    
+    // TTS processor coroutine scope for proper cleanup
+    private var ttsProcessorJob: Job? = null
     
     init {
         initTTS()
@@ -98,7 +102,7 @@ class VoiceManager(private val context: Context) {
     }
     
     private fun startTTSProcessor() {
-        CoroutineScope(Dispatchers.IO).launch {
+        ttsProcessorJob = CoroutineScope(Dispatchers.IO).launch {
             for (text in ttsQueue) {
                 if (ttsReady && tts != null) {
                     val utteranceId = "utterance_${System.currentTimeMillis()}"
@@ -134,8 +138,7 @@ class VoiceManager(private val context: Context) {
     
     /** Start continuous listening for hotword (requires Porcupine or similar) */
     fun startHotwordDetection(onHotword: (String) -> Unit) {
-        // In production, integrate Porcupine wake word engine here
-        // This is a placeholder
+        // TODO: Integrate Porcupine wake word engine for production
     }
     
     /** Speak text (queued) */
@@ -175,6 +178,8 @@ class VoiceManager(private val context: Context) {
     
     /** Shutdown */
     fun shutdown() {
+        ttsProcessorJob?.cancel()
+        ttsProcessorJob = null
         speechRecognizer?.destroy()
         speechRecognizer = null
         tts?.shutdown()

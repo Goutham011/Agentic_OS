@@ -64,6 +64,7 @@ A non-rooted Android app that turns any phone into a JARVIS-style autonomous ass
 |------|--------|------------|
 | Accessibility service killed by Doze | Agent stops working | Foreground service + adaptive polling + WorkManager heartbeat + `FLAG_RETRIEVE_INTERACTIVE_WINDOWS` |
 | Play Store rejection (accessibility abuse) | Cannot distribute via Play | Frame as "personal automation assistant for accessibility & productivity"; distribute via GitHub/F-Droid/website for v1 |
+| **Play Protect scanning** | App may be flagged as security risk | Remove `packageNames="*"` from accessibility config; add network security config; restrict file provider; document accessibility purpose clearly |
 | Battery drain | User uninstalls | Aggressive power management: charging-only workers, adaptive wake intervals, sensor batching |
 | Screen reading inaccuracy | Commands fail | ML Kit OCR fallback, confidence thresholds before acting, user correction loop |
 | Action reliability (UI injection) | Taps miss, wrong field filled | Dry-run preview, rollback where possible (WiFi/BT), audit log, confirmation for destructive actions |
