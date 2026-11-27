@@ -37,6 +37,16 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
+      - name: Configure Gradle properties
+        run: |
+          cat <<'PROP_EOF' > gradle.properties
+          android.useAndroidX=true
+          android.enableJetifier=true
+          org.gradle.daemon=false
+          org.gradle.parallel=false
+          org.gradle.caching=false
+          PROP_EOF
+
       - name: Decrypt keystore (if available)
         if: ${{ env.KEYSTORE_BASE64 != '' && env.KEYSTORE_PASSWORD != '' }}
         env:
