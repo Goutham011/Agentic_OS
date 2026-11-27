@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Default configuration for all app traffic -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">localhost</domain>
+    </domain-config>
+    
+    <!-- Allow cleartext for specific development domains if needed -->
+    <!-- Remove in production -->
+    <debug-overrides>
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        <domain includeSubdomains="true">192.168.</domain>
+    </debug-overrides>
+</network-security-config>

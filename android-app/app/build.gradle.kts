@@ -1,8 +1,9 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
+    id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.23"
 }
 
 android {
@@ -16,7 +17,7 @@ android {
         versionCode = 1
         versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        
+
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments += mapOf("room.schemaLocation" to "$projectDir/schemas")
@@ -24,9 +25,19 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = rootProject.file("release.keystore")
+            storePassword = (findProperty("KEYSTORE_PASSWORD") as? String) ?: System.getenv("KEYSTORE_PASSWORD")
+            keyAlias = (findProperty("RELEASE_KEY_ALIAS") as? String) ?: "release"
+            keyPassword = (findProperty("KEY_PASSWORD") as? String) ?: System.getenv("KEY_PASSWORD")
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
         debug {
@@ -68,19 +79,19 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 
-    // Room (using annotationProcessor instead of ksp)
+    // Room (kapt generates AgenticDatabase_Impl for Kotlin sources)
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
-    annotationProcessor("androidx.room:room-compiler:$room_version")
-    
+    kapt("androidx.room:room-compiler:$room_version")
+
     // SQLCipher for encrypted database
     implementation("net.zetetic:android-database-sqlcipher:4.5.0")
 
-    // Hilt
+    // Hilt - moved kapt before implementation
     val hilt_version = "2.48.1"
+    kapt("com.google.dagger:hilt-compiler:$hilt_version")
     implementation("com.google.dagger:hilt-android:$hilt_version")
-    annotationProcessor("com.google.dagger:hilt-compiler:$hilt_version")
 
     // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.9.0")
@@ -110,10 +121,10 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended:1.6.7")
 
     // Compose - Use BOM to manage versions
-    implementation(platform("androidx.compose:compose-bom:2024.10.00"))
+    implementation(platform("androidx.compose:compose-bom:2024.02.00"))
     implementation("androidx.compose.material3:material3")
     implementation("androidx.activity:activity-compose:1.9.0")
-    
+
     // Porcupine (Wake Word)
     implementation("ai.picovoice:porcupine-android:3.0.1")
 
@@ -131,4 +142,9 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("com.google.dagger:hilt-android-testing:$hilt_version")
+}
+
+// Hilt Gradle ID for annotation processing
+kapt {
+    correctErrorTypes = true
 }
