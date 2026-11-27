@@ -1,4 +1,4 @@
-R8 rules for Agentic OS
+# R8 rules for Agentic OS
 -keep class net.zetetic.** { *; }
 -dontwarn net.zetetic.database.sqlcipher.SupportFactory
 -keep class * extends androidx.room.RoomDatabase
