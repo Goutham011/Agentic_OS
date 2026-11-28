@@ -7,3 +7,8 @@
 -keep class * extends androidx.hilt.workflow.WorkerManager
 -keep class com.agenticos.agent.Hilt_AgenticOSApplication { *; }
 -keep public class com.agenticos.agent.** { public *; }
+
+# Compile-time / AutoValue / JavaPoet types not present on Android runtime
+-dontwarn javax.lang.model.**
+-dontwarn com.google.auto.value.**
+-dontwarn autovalue.shaded.**
