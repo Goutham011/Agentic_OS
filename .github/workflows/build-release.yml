@@ -21,7 +21,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 25
     defaults:
       run:
         working-directory: android-app
@@ -43,8 +43,9 @@ jobs:
           android.useAndroidX=true
           android.enableJetifier=true
           org.gradle.daemon=false
-          org.gradle.parallel=false
-          org.gradle.caching=false
+          org.gradle.parallel=true
+          org.gradle.caching=true
+          org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m -Dfile.encoding=UTF-8
           PROP_EOF
 
       - name: Decrypt keystore (if available)
