@@ -59,19 +59,27 @@ jobs:
           CLEAN_B64=$(printf '%s' "$KEYSTORE_BASE64" | tr -d '[:space:]')
           if [ -n "$CLEAN_B64" ] && [ -n "$KEYSTORE_PASSWORD" ] && printf '%s' "$CLEAN_B64" | base64 -d > release.keystore 2>/dev/null && [ -s release.keystore ]; then
             echo "Using configured release keystore from secrets."
+            EFFECTIVE_KEY_PASS="${KEY_PASSWORD:-$KEYSTORE_PASSWORD}"
+            EFFECTIVE_ALIAS="${RELEASE_KEY_ALIAS:-release}"
             echo "KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
-            echo "KEY_PASSWORD=${KEY_PASSWORD:-$KEYSTORE_PASSWORD}" >> "$GITHUB_ENV"
-            echo "RELEASE_KEY_ALIAS=${RELEASE_KEY_ALIAS:-release}" >> "$GITHUB_ENV"
+            echo "KEY_PASSWORD=$EFFECTIVE_KEY_PASS" >> "$GITHUB_ENV"
+            echo "RELEASE_KEY_ALIAS=$EFFECTIVE_ALIAS" >> "$GITHUB_ENV"
+            cat <<'SIGN_EOF' >> gradle.properties
+          KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
+          KEY_PASSWORD=${EFFECTIVE_KEY_PASS}
+          RELEASE_KEY_ALIAS=${EFFECTIVE_ALIAS}
+          SIGN_EOF
           else
-            echo "Generating temporary CI keystore for release packaging."
-            rm -f release.keystore
-            keytool -genkeypair -v -keystore release.keystore \
+            echo "Generating temporary CI PKCS12 keystore for release packaging."
+            CI_PASS="ci_release_pass_123"
+            keytool -genkeypair -v -keystore release.keystore -storetype PKCS12 \
               -alias release -keyalg RSA -keysize 2048 -validity 10000 \
-              -storepass ci_temp_store_pass -keypass ci_temp_key_pass \
+              -storepass "$CI_PASS" -keypass "$CI_PASS" \
               -dname "CN=AgenticOS CI, OU=Dev, O=AgenticOS, L=Vijayawada, S=AP, C=IN"
-            echo "KEYSTORE_PASSWORD=ci_temp_store_pass" >> "$GITHUB_ENV"
-            echo "KEY_PASSWORD=ci_temp_key_pass" >> "$GITHUB_ENV"
+            echo "KEYSTORE_PASSWORD=$CI_PASS" >> "$GITHUB_ENV"
+            echo "KEY_PASSWORD=$CI_PASS" >> "$GITHUB_ENV"
             echo "RELEASE_KEY_ALIAS=release" >> "$GITHUB_ENV"
+            printf "KEYSTORE_PASSWORD=%s\nKEY_PASSWORD=%s\nRELEASE_KEY_ALIAS=release\n" "$CI_PASS" "$CI_PASS" >> gradle.properties
           fi
 
       - name: Build release APK
