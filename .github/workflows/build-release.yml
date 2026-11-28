@@ -55,12 +55,16 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         run: |
-          if [ -n "$KEYSTORE_BASE64" ] && [ -n "$KEYSTORE_PASSWORD" ]; then
-            echo "$KEYSTORE_BASE64" | base64 -d > release.keystore
+          rm -f release.keystore
+          CLEAN_B64=$(printf '%s' "$KEYSTORE_BASE64" | tr -d '[:space:]')
+          if [ -n "$CLEAN_B64" ] && [ -n "$KEYSTORE_PASSWORD" ] && printf '%s' "$CLEAN_B64" | base64 -d > release.keystore 2>/dev/null && [ -s release.keystore ]; then
+            echo "Using configured release keystore from secrets."
             echo "KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
             echo "KEY_PASSWORD=${KEY_PASSWORD:-$KEYSTORE_PASSWORD}" >> "$GITHUB_ENV"
             echo "RELEASE_KEY_ALIAS=${RELEASE_KEY_ALIAS:-release}" >> "$GITHUB_ENV"
           else
+            echo "Generating temporary CI keystore for release packaging."
+            rm -f release.keystore
             keytool -genkeypair -v -keystore release.keystore \
               -alias release -keyalg RSA -keysize 2048 -validity 10000 \
               -storepass ci_temp_store_pass -keypass ci_temp_key_pass \
